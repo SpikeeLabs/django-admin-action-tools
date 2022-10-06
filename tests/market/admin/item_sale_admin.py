@@ -1,7 +1,6 @@
-from admin_confirm.admin import AdminConfirmMixin
-
-
 from django.contrib.admin import ModelAdmin
+
+from admin_action_tools.admin import AdminConfirmMixin
 
 
 class ItemSaleAdmin(AdminConfirmMixin, ModelAdmin):

@@ -1,6 +1,7 @@
-from django.contrib.admin import ModelAdmin, VERTICAL
+from django.contrib.admin import VERTICAL, ModelAdmin
 from django.utils.safestring import mark_safe
-from admin_confirm.admin import AdminConfirmMixin
+
+from admin_action_tools.admin import AdminConfirmMixin
 
 
 class ItemAdmin(AdminConfirmMixin, ModelAdmin):

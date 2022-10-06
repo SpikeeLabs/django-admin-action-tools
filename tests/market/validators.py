@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
-from .constants import VALID_CURRENCIES
+
+from tests.market.constants import VALID_CURRENCIES
 
 
 def validate_currency(value: str):

@@ -8,25 +8,23 @@ services:
       args:
         PYTHON_VERSION: "$PYTHON_VERSION"
         DJANGO_VERSION: "$DJANGO_VERSION"
-        SELENIUM_VERSION: "$SELENIUM_VERSION"
+        USE_S3: true
     # Note: collectstatic runs from inside the docker container and needs
     #       to access localstack through the host machine using host.docker.internal
     #       BUT when we access the django server from our host machine, we need to access
     #       the stored staticfiles via localhost, so export LOCALSTACK_HOST before and after
     command: >
-      sh -c "export LOCALSTACK_HOST=host.docker.internal &&
+      sh -c "export LOCALSTACK_HOST=localstack &&
              python tests/manage.py collectstatic --no-input &&
              export LOCALSTACK_HOST=localhost &&
              python tests/manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/code
     ports:
       - "8000:8000"
     depends_on:
       - selenium
       - localstack
     environment:
-      - LOCALSTACK_HOST=host.docker.internal
+      - LOCALSTACK_HOST=localstack
       - SELENIUM_HOST=host.docker.internal
 
   selenium:
@@ -45,7 +43,7 @@ services:
     environment:
       - SERVICES=s3
       - DEBUG=true
-      # enable persistance
+      # enable persistence
       - DATA_DIR=/tmp/localstack/data
       - LAMBDA_EXECUTOR=docker
       - DOCKER_HOST=unix:///var/run/docker.sock

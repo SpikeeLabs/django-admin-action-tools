@@ -3,4 +3,4 @@
 # (Possibly due to test_project being within a subfolder)
 # This defaults settings to local unless
 # DJANGO_SETTINGS_MODULE is specified.
-from .local import *
+from tests.test_project.settings.test import *

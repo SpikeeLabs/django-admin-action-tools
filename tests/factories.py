@@ -1,10 +1,10 @@
-import factory
-
 from random import choice, randint
+
+import factory
 from django.utils import timezone
 
-from .market.models import Item, Shop, Inventory, Transaction
-from .market.constants import VALID_CURRENCIES
+from tests.market.constants import VALID_CURRENCIES
+from tests.market.models import Inventory, Item, Shop, Transaction
 
 
 class ItemFactory(factory.django.DjangoModelFactory):

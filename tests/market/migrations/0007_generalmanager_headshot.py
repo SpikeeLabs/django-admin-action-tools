@@ -13,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="generalmanager",
             name="headshot",
-            field=models.ImageField(
-                blank=True, null=True, upload_to="tmp/gm/headshots"
-            ),
+            field=models.ImageField(blank=True, null=True, upload_to="tmp/gm/headshots"),
         ),
     ]

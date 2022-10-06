@@ -1,4 +1,4 @@
-from .base import *
+from tests.test_project.settings.base import *
 
 INSTALLED_APPS = INSTALLED_APPS + ["tests.market"]
 WSGI_APPLICATION = "tests.test_project.wsgi.application"

@@ -23,7 +23,7 @@ SECRET_KEY = "=yddl-40388w3e2hl$e8)revce=n67_idi8pfejtn3!+2%!_qt"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ADMIN_CONFIRM_DEBUG = True
+ADMIN_TOOLS_DEBUG = True
 
 USE_DOCKER = os.environ.get("USE_DOCKER", "").lower() == "true"
 
@@ -36,7 +36,7 @@ if USE_DOCKER:
 # Application definition
 
 INSTALLED_APPS = [
-    "admin_confirm",
+    "admin_action_tools",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -111,8 +111,6 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 # Setting the hostnames of the services which we are running
@@ -156,6 +154,6 @@ else:
     MEDIA_URL = "/mediafiles/"
     MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = (BASE_DIR,)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

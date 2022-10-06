@@ -8,9 +8,6 @@ services:
       args:
         PYTHON_VERSION: "$PYTHON_VERSION"
         DJANGO_VERSION: "$DJANGO_VERSION"
-        SELENIUM_VERSION: "$SELENIUM_VERSION"
     command: python tests/manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
     network_mode: host
     container_name: web_main

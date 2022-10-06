@@ -13,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="inventory",
             name="notes",
-            field=models.TextField(
-                blank=True, default="This is the default", null=True
-            ),
+            field=models.TextField(blank=True, default="This is the default", null=True),
         ),
     ]

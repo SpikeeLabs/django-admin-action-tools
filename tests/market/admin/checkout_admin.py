@@ -1,10 +1,9 @@
-from django.core.exceptions import ValidationError
-from admin_confirm.admin import AdminConfirmMixin
-
 from django.contrib.admin import ModelAdmin
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
-from ..models import Checkout
+from admin_action_tools.admin import AdminConfirmMixin
+from tests.market.models import Checkout
 
 
 class CheckoutForm(ModelForm):
@@ -24,7 +23,7 @@ class CheckoutForm(ModelForm):
     def clean_total(self):
         try:
             total = float(self.cleaned_data["total"])
-        except:
+        except Exception:
             raise ValidationError("Invalid Total From clean_total")
         if total == 111:  # Use to cause error in test
             raise ValidationError("Invalid Total 111")
@@ -34,7 +33,7 @@ class CheckoutForm(ModelForm):
     def clean(self):
         try:
             total = float(self.data["total"])
-        except:
+        except Exception:
             raise ValidationError("Invalid Total From clean")
         if total == 222:  # Use to cause error in test
             raise ValidationError("Invalid Total 222")

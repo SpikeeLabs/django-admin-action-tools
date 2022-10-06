@@ -1,7 +1,8 @@
-from ..models import ShoppingMall
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.options import StackedInline
-from admin_confirm.admin import AdminConfirmMixin
+
+from admin_action_tools.admin import AdminConfirmMixin
+from tests.market.models import ShoppingMall
 
 
 class ShopInline(StackedInline):

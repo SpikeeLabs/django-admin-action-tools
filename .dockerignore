@@ -34,3 +34,18 @@ docs/_build/
 .idea/
 
 tmp/
+.venv/*
+.env
+.github/*
+.pre-commit-config.yaml
+
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+Dockerfile
+LICENSE
+README.md
+commitlint.config.js
+docker-compose.ci.yml
+docker-compose.dev.yml
+docs/*
+screenshot*
