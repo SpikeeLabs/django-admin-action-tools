@@ -1,10 +1,15 @@
+from unittest.mock import MagicMock
+
+from django.contrib.admin.options import IS_POPUP_VAR
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import Permission, User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from admin_action_tools.constants import CONFIRM_ACTION
 from tests.market.admin import ShopAdmin
-from tests.market.models import Shop
+from tests.market.admin.inventory_admin import InventoryAdmin
+from tests.market.models import Inventory, Shop
 
 
 class TestConfirmActions(TestCase):
@@ -239,7 +244,7 @@ class TestConfirmActions(TestCase):
         Simulate calling the post request that the button would
         """
         post_params = {
-            "_confirm_action": ["Yes, I'm sure"],
+            CONFIRM_ACTION: ["Yes, I'm sure"],
             "action": ["show_message"],
             "_selected_action": ["3", "2", "1"],
         }
@@ -271,3 +276,13 @@ class TestConfirmActions(TestCase):
         self.assertEqual(expected_template, actual_template)
         # Clear our setting to not affect other tests
         ShopAdmin.action_confirmation_template = None
+
+    def test_get_actions_when_empty(self):
+        admin = InventoryAdmin(Inventory, AdminSite())
+        admin.actions = None
+        request = MagicMock()
+        request.GET = {
+            IS_POPUP_VAR,
+        }
+        actions = admin._get_actions({})
+        self.assertEqual(actions, {})

@@ -7,16 +7,18 @@ from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.admin.utils import flatten_fieldsets, unquote
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db.models import FileField, ImageField, ManyToManyField, Model
+from django.db.models import FileField, ImageField, ManyToManyField, Model, QuerySet
 from django.forms import ModelForm
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control
 
+from admin_action_tools.admin.base import BaseMixin
 from admin_action_tools.constants import (
     CACHE_KEYS,
     CACHE_TIMEOUT,
+    CONFIRM_ACTION,
     CONFIRM_ADD,
     CONFIRM_CHANGE,
     CONFIRMATION_RECEIVED,
@@ -25,7 +27,6 @@ from admin_action_tools.constants import (
     SAVE_AND_CONTINUE,
     SAVE_AS_NEW,
 )
-from admin_action_tools.file_cache import FileCache
 from admin_action_tools.utils import (
     format_cache_key,
     get_admin_change_url,
@@ -34,7 +35,7 @@ from admin_action_tools.utils import (
 )
 
 
-class AdminConfirmMixin:
+class AdminConfirmMixin(BaseMixin):
     # Should we ask for confirmation for changes?
     confirm_change = None
 
@@ -47,8 +48,6 @@ class AdminConfirmMixin:
     # Custom templates (designed to be over-ridden in subclasses)
     change_confirmation_template = None
     action_confirmation_template = None
-
-    _file_cache = FileCache()
 
     def get_confirmation_fields(self, request, obj=None):
         """
@@ -416,16 +415,17 @@ def confirm_action(func):
     """
 
     @functools.wraps(func)
-    def func_wrapper(modeladmin, request, queryset):
+    def func_wrapper(modeladmin: AdminConfirmMixin, request, queryset_or_object):
         # First called by `Go` which would not have confirm_action in params
-        if request.POST.get("_confirm_action"):
-            return func(modeladmin, request, queryset)
+        if request.POST.get(CONFIRM_ACTION):
+            return func(modeladmin, request, queryset_or_object)
 
         # get_actions will only return the actions that are allowed
-        has_perm = modeladmin.get_actions(request).get(func.__name__) is not None
+        has_perm = modeladmin._get_actions(request).get(func.__name__) is not None
 
         action_display_name = snake_to_title_case(func.__name__)
         title = f"Confirm Action: {action_display_name}"
+        queryset: QuerySet = modeladmin.to_queryset(request, queryset_or_object)
 
         context = {
             **modeladmin.admin_site.each_context(request),
