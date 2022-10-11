@@ -6,6 +6,7 @@ on:
 
 jobs:
   semver:
+    needs: [test, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
