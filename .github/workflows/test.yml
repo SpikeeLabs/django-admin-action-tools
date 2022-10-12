@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10"]
-        django-version: ["3.2", "4.1"]
+        django-version: ["3.2.16", "4.1.2"]
         poetry-version: ["1.2"]
     env:
       DJANGO_VERSION: ${{ matrix.django-version }}
@@ -48,6 +48,7 @@ jobs:
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-west-1
+      AWS_STORAGE_BUCKET_NAME: "dj${{ matrix.django-version }}-py${{ matrix.python-version }}"
     steps:
     - name: Update Permissions
       run: |
@@ -70,8 +71,11 @@ jobs:
     - name: Attempt to connect to localstack and create bucket
       run: |
         curl -X GET http://localhost:4566/health
-        aws --endpoint-url http://localhost:4566 s3 mb s3://mybucket 2> /dev/null || true
+        aws --endpoint-url http://localhost:4566 s3 mb s3://${AWS_STORAGE_BUCKET_NAME} 2> /dev/null || true
       # Since docker-entrypoint-initaws.d can't be used to create the s3 bucket on CI
+
+    - name: Collect Static
+      run: poetry run python tests/manage.py collectstatic --no-input
 
     - name: Run tests with coverage
       run: |
