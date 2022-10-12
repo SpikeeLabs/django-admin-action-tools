@@ -20,6 +20,17 @@ Run **migrations** and create a superuser and run the server
 ```
 poetry run ./tests/manage.py migrate
 poetry run ./tests/manage.py createsuperuser
+
+```
+
+Run the docker-compose and **collectstatic**
+
+```bash
+docker compose -f "docker/docker-compose.dev.yml" up -d --build localstack selenium
+python tests/manage.py collectstatic --no-input
+```
+Run the Server
+```bash
 poetry run ./tests/manage.py runserver
 ```
 

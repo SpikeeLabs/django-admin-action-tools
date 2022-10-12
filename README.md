@@ -7,40 +7,65 @@
 ![PyPI - Django Version](https://img.shields.io/pypi/djversions/django-admin-action-tools)
 ![PyPI - License](https://img.shields.io/pypi/l/django_admin_action_tools)
 
+---
 ## Features
-- [ ] AdminConfirmMixin
+- [x] AdminConfirmMixin
     Based on [django-admin-confirm](https://github.com/TrangPham/django-admin-confirm) with support for [django-object-actions](https://github.com/crccheck/django-object-actions)
     AdminConfirmMixin is a mixin for ModelAdmin to add confirmations to change, add and actions.
-- [ ] AdminFormMixin
+- [x] AdminFormMixin
     AdminFormMixin is a mixin for ModelAdmin to add a form to configure your actions.
 
+- [ ] Ability to Confirm an action form with a preview of the objects and form data
 
+- [ ] Add support to chain form
+
+---
 ## ScreenShot
-![Screenshot of Change Confirmation Page](https://raw.githubusercontent.com/SpikeeLabs/django-admin-action-tools/alpha/docs/images/screenshot.png)
+<details>
+  <summary><b>Confirm ScreenShot</b></summary>
+
+![Screenshot of Change Confirmation Page](https://raw.githubusercontent.com/SpikeeLabs/django-admin-action-tools/alpha/docs/images/screenshot_confirm_change.png)
 
 ![Screenshot of Add Confirmation Page](https://raw.githubusercontent.com/SpikeeLabs/django-admin-action-tools/alpha/docs/images/screenshot_confirm_add.png)
 
 ![Screenshot of Action Confirmation Page](https://raw.githubusercontent.com/SpikeeLabs/django-admin-action-tools/alpha/docs/images/screenshot_confirm_action.png)
 
+</details>
 
+<details>
+  <summary><b>Form ScreenShot</b></summary>
+
+![Screenshot of The Action Form](https://raw.githubusercontent.com/SpikeeLabs/django-admin-action-tools/alpha/docs/images/screenshot_action_form.png)
+
+
+</details>
+
+
+---
 ## Installation
 
 Install django-admin-action-tools by running:
 
     poetry add django-admin-action-tools
 
-Add to INSTALLED_APPS in your project settings before `django.contrib.admin`:
+Add `admin_action_tools` to `INSTALLED_APPS` in your project settings before `django.contrib.admin`:
 
     INSTALLED_APPS = [
         ...
         'admin_action_tools',
 
         'django.contrib.admin',
+
+        ...
+        'widget_tweaks'
         ...
     ]
 
+To use `ActionFormMixin` you also need to add `widget_tweaks` to the `INSTALLED_APPS`
+
 Note that this project follows the template override rules of Django.
 To override a template, your app should be listed before `admin_confirm`, `admin_form` in INSTALLED_APPS.
+
 
 ## Configuration Options
 
@@ -127,9 +152,40 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 
 > Note: AdminConfirmMixin does not confirm any changes on inlines
 
-### AdminFormMixin
-TODO
+**Confirm Object Action:**
 
+```py
+    from admin_confirm import AdminConfirmMixin
+    from django_object_actions import DjangoObjectActions
+
+    class MyModelAdmin(AdminConfirmMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1"]
+
+        @confirm_action
+        def action1(self, request, object):
+            # Do something with the object
+```
+
+
+### AdminFormMixin
+**Action Form**
+
+```py
+    from admin_confirm import ActionFormMixin, add_form_to_action
+    from myapp.form import NoteActionForm
+    from django_object_actions import DjangoObjectActions
+
+    class MyModelAdmin(ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["object_action"]
+
+        @add_form_to_action(NoteActionForm)
+        def action1(modeladmin, request, queryset):
+            # Do something with the queryset
+
+        @add_form_to_action(NoteActionForm)
+        def object_action(modeladmin, request, object):
+            # Do something with the object
+```
 
 ## Development
 Check out our [development process](docs/development_process.md) if you're interested.
