@@ -337,6 +337,14 @@ libcloud = ["apache-libcloud"]
 sftp = ["paramiko"]
 
 [[package]]
+name = "django-widget-tweaks"
+version = "1.4.12"
+description = "Tweak the form field rendering in templates, not in python-level form definitions."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "dnslib"
 version = "0.9.22"
 description = "Simple library to encode/decode DNS wire-format packets"
@@ -1449,7 +1457,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d2224684072ea22874be7c5b7b5219b2914c3e438f2c640a41d62f39215b4313"
+content-hash = "8bea0fa89403a171006861ad7cc2fa2b1680eaa7850b4f1fcf24ea588333dacd"
 
 [metadata.files]
 apispec = []
@@ -1568,6 +1576,7 @@ distlib = []
 django = []
 django-object-actions = []
 django-storages = []
+django-widget-tweaks = []
 dnslib = []
 dnspython = []
 docopt = []
