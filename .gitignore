@@ -40,3 +40,4 @@ tmp/
 
 .python-version
 .env
+tests/test_project/staticfiles/*

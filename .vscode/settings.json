@@ -5,5 +5,9 @@
   "python.analysis.extraPaths": [],
   "python.linting.pylamaEnabled": true,
   "python.linting.enabled": true,
-  "python.analysis.typeCheckingMode": "basic"
+  "python.analysis.typeCheckingMode": "off",
+  "pythonTestExplorer.testFramework": "pytest",
+  "pythonTestExplorer.testplanArgs": [
+    "--ds=tests.test_project.settings.test"
+  ]
 }

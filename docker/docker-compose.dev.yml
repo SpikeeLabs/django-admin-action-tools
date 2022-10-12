@@ -29,9 +29,13 @@ services:
 
   selenium:
     image: selenium/standalone-firefox
+    network_mode: "host"
     ports:
       - "4444:4444" # Selenium
       - "5900:5900" # VNC
+    environment:
+      - SE_NODE_MAX_SESSIONS=4
+      - SE_NODE_SESSION_TIMEOUT=180
     volumes:
       - .:/code
 
@@ -44,11 +48,7 @@ services:
       - SERVICES=s3
       - DEBUG=true
       # enable persistence
-      - DATA_DIR=/tmp/localstack/data
-      - LAMBDA_EXECUTOR=docker
-      - DOCKER_HOST=unix:///var/run/docker.sock
+      - PERSISTENCE=1
       - HOSTNAME_EXTERNAL=localstack
     volumes:
-      - "./docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d"
-      - "./tmp/localstack:/tmp/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./create_bucket.sh:/docker-entrypoint-initaws.d/create_bucket.sh"
