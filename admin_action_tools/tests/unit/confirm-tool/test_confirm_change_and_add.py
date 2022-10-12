@@ -57,9 +57,9 @@ class TestConfirmChangeAndAdd(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/inventory/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/inventory/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 
@@ -87,9 +87,9 @@ class TestConfirmChangeAndAdd(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/shoppingmall/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/shoppingmall/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
         self._assertSubmitHtml(rendered_content=response.rendered_content)
@@ -113,9 +113,9 @@ class TestConfirmChangeAndAdd(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/item/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/item/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
         form_data = {

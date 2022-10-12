@@ -1,8 +1,9 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from django.contrib.admin.options import IS_POPUP_VAR
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest
+from django.template.response import TemplateResponse
 
 from admin_action_tools.file_cache import FileCache
 
@@ -42,3 +43,20 @@ class BaseMixin:
         if not isinstance(object_or_queryset, QuerySet):
             return self.get_queryset(request).filter(pk=object_or_queryset.pk)
         return object_or_queryset
+
+    def render_template(self, request: HttpRequest, context: Dict, template_name: str, custom_template=None):
+        opts = self.model._meta
+        app_label = opts.app_label
+
+        request.current_app = self.admin_site.name
+
+        return TemplateResponse(
+            request,
+            custom_template
+            or [
+                f"admin/{app_label}/{opts.model_name}/{template_name}",
+                f"admin/{app_label}/{template_name}",
+                f"admin/{template_name}",
+            ],
+            context,
+        )

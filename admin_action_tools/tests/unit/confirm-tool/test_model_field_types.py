@@ -29,9 +29,9 @@ class TestModelFieldTypes(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/transaction/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/transaction/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 
@@ -71,9 +71,9 @@ class TestModelFieldTypes(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/transaction/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/transaction/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 

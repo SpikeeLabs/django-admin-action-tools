@@ -44,9 +44,9 @@ class TestWithValidators(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/itemsale/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/itemsale/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 
@@ -122,9 +122,9 @@ class TestWithValidators(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/itemsale/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/itemsale/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 
@@ -188,9 +188,9 @@ class TestWithValidators(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/itemsale/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/itemsale/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 
@@ -216,9 +216,9 @@ class TestWithValidators(AdminConfirmTestCase):
         # Ensure not redirected (confirmation page does not redirect)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
-            "admin/market/checkout/change_confirmation.html",
-            "admin/market/change_confirmation.html",
-            "admin/change_confirmation.html",
+            "admin/market/checkout/confirm_tool/change_confirmation.html",
+            "admin/market/confirm_tool/change_confirmation.html",
+            "admin/confirm_tool/change_confirmation.html",
         ]
         self.assertEqual(response.template_name, expected_templates)
 

@@ -66,9 +66,9 @@ class TestConfirmActions(TestCase):
         self.assertEqual(
             response.template_name,
             [
-                "admin/market/shop/action_confirmation.html",
-                "admin/market/action_confirmation.html",
-                "admin/action_confirmation.html",
+                "admin/market/shop/confirm_tool/action_confirmation.html",
+                "admin/market/confirm_tool/action_confirmation.html",
+                "admin/confirm_tool/action_confirmation.html",
             ],
         )
 

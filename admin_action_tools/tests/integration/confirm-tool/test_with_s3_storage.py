@@ -27,14 +27,17 @@ class ConfirmWithS3StorageTests(AdminConfirmIntegrationTestCase):
         self.s3 = session.resource("s3")
         self.bucket = self.s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
         # Delete all current files
-        for obj in self.bucket.objects.all():
+        for obj in self.get_all_media():
             obj.delete()
         super().setUp()
+
+    def get_all_media(self):
+        return list(self.bucket.objects.filter(Prefix="media/"))
 
     def tearDown(self):
         reload(shoppingmall_admin)
         # Delete all current files
-        for obj in self.bucket.objects.all():
+        for obj in self.get_all_media():
             obj.delete()
         super().tearDown()
 
@@ -81,7 +84,7 @@ class ConfirmWithS3StorageTests(AdminConfirmIntegrationTestCase):
         self.assertEqual(21, int(item.price))
 
         # Check S3 for the file
-        objects = [obj for obj in self.bucket.objects.all()]
+        objects = self.get_all_media()
         self.assertEqual(len(objects), 1)
         self.assertRegex(objects[0].key, r"screenshot.*\.png$")
 
@@ -125,7 +128,7 @@ class ConfirmWithS3StorageTests(AdminConfirmIntegrationTestCase):
         self.assertRegex(item.file.name, r"screenshot.*\.png$")
 
         # Check S3 for the file
-        objects = [obj for obj in self.bucket.objects.all()]
+        objects = self.get_all_media()
         self.assertEqual(len(objects), 2)
         get_last_modified = lambda obj: int(obj.last_modified.strftime("%s"))
         objects_by_last_modified = [obj for obj in sorted(objects, key=get_last_modified)]
@@ -170,6 +173,6 @@ class ConfirmWithS3StorageTests(AdminConfirmIntegrationTestCase):
         # Check S3 for the file
         # Since deleting from model instance in Django does not automatically
         #   delete from storage, the old file should still be in S3
-        objects = [obj for obj in self.bucket.objects.all()]
+        objects = self.get_all_media()
         self.assertEqual(len(objects), 1)
         self.assertRegex(objects[0].key, r"old_file.*\.jpg$")

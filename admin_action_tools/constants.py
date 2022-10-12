@@ -10,7 +10,7 @@ CONFIRM_ADD = "_confirm_add"
 CONFIRM_CHANGE = "_confirm_change"
 CONFIRMATION_RECEIVED = "_confirmation_received"
 CONFIRM_ACTION = "_confirm_action"
-
+CONFIRM_FORM = "_form_action"
 
 CACHE_TIMEOUT = getattr(settings, "ADMIN_CONFIRM_CACHE_TIMEOUT", 1000)
 CACHE_KEYS = {

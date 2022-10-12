@@ -9,7 +9,6 @@ from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db.models import FileField, ImageField, ManyToManyField, Model, QuerySet
 from django.forms import ModelForm
-from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control
@@ -61,44 +60,30 @@ class AdminConfirmMixin(BaseMixin):
         return list(model_fields & admin_fields)
 
     def render_change_confirmation(self, request, context):
-        opts = self.model._meta
-        app_label = opts.app_label
-
-        request.current_app = self.admin_site.name
         context.update(
             media=self.media,
         )
 
-        return TemplateResponse(
+        return super().render_template(
             request,
-            self.change_confirmation_template
-            or [
-                "admin/{}/{}/change_confirmation.html".format(app_label, opts.model_name),
-                "admin/{}/change_confirmation.html".format(app_label),
-                "admin/change_confirmation.html",
-            ],
             context,
+            "confirm_tool/change_confirmation.html",
+            custom_template=self.change_confirmation_template,
         )
 
     def render_action_confirmation(self, request, context):
         opts = self.model._meta
-        app_label = opts.app_label
 
-        request.current_app = self.admin_site.name
         context.update(
             media=self.media,
             opts=opts,
         )
 
-        return TemplateResponse(
+        return super().render_template(
             request,
-            self.action_confirmation_template
-            or [
-                "admin/{}/{}/action_confirmation.html".format(app_label, opts.model_name),
-                "admin/{}/action_confirmation.html".format(app_label),
-                "admin/action_confirmation.html",
-            ],
             context,
+            "confirm_tool/action_confirmation.html",
+            custom_template=self.action_confirmation_template,
         )
 
     @method_decorator(cache_control(private=True))
@@ -386,13 +371,12 @@ class AdminConfirmMixin(BaseMixin):
             **self.admin_site.each_context(request),
             "preserved_filters": self.get_preserved_filters(request),
             "title": f"{_('Confirm')} {title_action} {opts.verbose_name}",
-            "subtitle": str(obj),
             "object_name": str(obj),
             "object_id": object_id,
             "app_label": opts.app_label,
             "model_name": opts.model_name,
             "opts": opts,
-            "obj": obj,
+            "obj": obj or new_object,
             "changed_data": changed_data,
             "add": add,
             "save_as_new": SAVE_AS_NEW in request.POST,

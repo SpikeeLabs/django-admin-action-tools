@@ -751,7 +751,7 @@ class TestConfirmationUsingFileCache(AdminConfirmTestCase):
         for key in CACHE_KEYS.values():
             self.assertIsNone(cache.get(key))
 
-    @mock.patch("admin_action_tools.admin.confirm.CACHE_TIMEOUT", 1)
+    @mock.patch("admin_action_tools.admin.confirm_tool.CACHE_TIMEOUT", 1)
     def test_old_cache_should_not_be_used(self):
         item = self.item
 
