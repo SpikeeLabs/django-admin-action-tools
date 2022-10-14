@@ -139,7 +139,7 @@ Note: `confirmation_fields` apply to both add/change confirmations.
         def action1(modeladmin, request, queryset):
             # Do something with the queryset
 
-        @confirm_action
+        @confirm_action()
         def action2(modeladmin, request, queryset):
             # Do something with the queryset
 
@@ -161,7 +161,7 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
     class MyModelAdmin(AdminConfirmMixin, DjangoObjectActions, ModelAdmin):
         change_actions = ["action1"]
 
-        @confirm_action
+        @confirm_action()
         def action1(self, request, object):
             # Do something with the object
 ```
@@ -184,6 +184,39 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 
         @add_form_to_action(NoteActionForm)
         def object_action(modeladmin, request, object):
+            # Do something with the object
+```
+
+**Chaining tools**
+
+```py
+    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from django_object_actions import DjangoObjectActions
+    from myapp.form import NoteActionForm
+
+    class MyModelAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1"]
+
+        @add_form_to_action(NoteActionForm)
+        @confirm_action()
+        def action1(self, request, object):
+            # Do something with the object
+```
+This will chain form and confirmation.
+The confirmation page will have the actions & form values displayed.
+If you only want the action (same as confirm only), you can pass the following argument
+
+```py
+    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from django_object_actions import DjangoObjectActions
+    from myapp.form import NoteActionForm
+
+    class MyModelAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1"]
+
+        @add_form_to_action(NoteActionForm)
+        @confirm_action(display_form=False)
+        def action1(self, request, object):
             # Do something with the object
 ```
 

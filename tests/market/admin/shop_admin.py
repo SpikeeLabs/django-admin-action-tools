@@ -8,7 +8,7 @@ class ShopAdmin(AdminConfirmMixin, ModelAdmin):
     actions = ["show_message", "show_message_no_confirmation"]
     search_fields = ["name"]
 
-    @confirm_action
+    @confirm_action()
     def show_message(modeladmin, request, queryset):
         shops = ", ".join(shop.name for shop in queryset)
         modeladmin.message_user(request, f"You selected with confirmation: {shops}")

@@ -60,10 +60,12 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
         # Should ask for confirmation of action
         self.assertIn(CONFIRM_ACTION, self.selenium.page_source)
 
+        self.assertIn("aaaaaa", self.selenium.page_source)
+
         self.selenium.find_element(By.NAME, CONFIRM_ACTION).click()
 
         inv1.refresh_from_db()
-        self.assertTrue("aaaaaa" in inv1.notes)
+        self.assertIn("aaaaaa", inv1.notes)
 
     def test_change_form_and_confirm_form_back(self):
         shop = ShopFactory()

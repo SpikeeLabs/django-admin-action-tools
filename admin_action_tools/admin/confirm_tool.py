@@ -21,6 +21,7 @@ from admin_action_tools.constants import (
     CONFIRM_ACTION,
     CONFIRM_ADD,
     CONFIRM_CHANGE,
+    CONFIRM_FORM,
     CONFIRMATION_RECEIVED,
     SAVE,
     SAVE_ACTIONS,
@@ -392,7 +393,7 @@ class AdminConfirmMixin(BaseMixin):
         }
         return self.render_change_confirmation(request, context)
 
-    def run_confirm_tool(self, func: Callable, request: HttpRequest, queryset_or_object):
+    def run_confirm_tool(self, func: Callable, request: HttpRequest, queryset_or_object, display_form):
         tool_chain: ToolChain = ToolChain(request)
         step = tool_chain.get_next_step(CONFIRM_ACTION)
 
@@ -405,6 +406,12 @@ class AdminConfirmMixin(BaseMixin):
             queryset: QuerySet = self.to_queryset(request, queryset_or_object)
             url = back_url(queryset, self.model._meta)
             return HttpResponseRedirect(url)
+
+        # FIXME: crud implementation for now
+        data, metadata = tool_chain.get_tool(CONFIRM_FORM)
+        form_instance = None
+        if display_form and data:
+            form_instance = self.load_form(data, metadata)
 
         # get_actions will only return the actions that are allowed
         has_perm = self._get_actions(request).get(func.__name__) is not None
@@ -425,26 +432,32 @@ class AdminConfirmMixin(BaseMixin):
             "submit_action": CONFIRM_ACTION,
             "submit_text": "Confirm",
             "back_text": "Back",
+            "form": form_instance,
+            "readonly": True,
         }
 
         # Display confirmation page
         return self.render_action_confirmation(request, context)
 
 
-def confirm_action(func):
+def confirm_action(display_form=True):
     """
-    @confirm_action function wrapper for Django ModelAdmin actions
+    @confirm_action() function wrapper for Django ModelAdmin actions
     Will redirect to a confirmation page to ask for confirmation
 
     Next, it would call the action if confirmed. Otherwise, it would
     return to the changelist without performing action.
     """
 
-    # make sure tools chain is setup
-    func = add_finishing_step(func)
+    def confirm_action_decorator(func):
 
-    @functools.wraps(func)
-    def func_wrapper(modeladmin: AdminConfirmMixin, request, queryset_or_object):
-        return modeladmin.run_confirm_tool(func, request, queryset_or_object)
+        # make sure tools chain is setup
+        func = add_finishing_step(func)
 
-    return func_wrapper
+        @functools.wraps(func)
+        def func_wrapper(modeladmin: AdminConfirmMixin, request, queryset_or_object):
+            return modeladmin.run_confirm_tool(func, request, queryset_or_object, display_form)
+
+        return func_wrapper
+
+    return confirm_action_decorator

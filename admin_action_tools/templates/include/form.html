@@ -1,0 +1,21 @@
+{% load widget_tweaks %}
+{% if form %}
+<div>
+    {% for field in form.visible_fields %}
+    <div class="form-row field-reference aligned">
+        {{ field.errors }}
+
+        {{ field.label_tag }}
+        {% if readonly %}
+        {% render_field field|attr:"readonly:readonly" %}
+        {% else %}
+        {% render_field field %}
+        {% endif %}
+        <div class="help">
+            {{ field.help_text }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endif %}

@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n l10n admin_urls static widget_tweaks formatting %}
+{% load i18n l10n admin_urls static formatting %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -39,21 +39,8 @@
   <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
   {% endfor %}
 
-  <div>
-    {% for field in form.visible_fields %}
-    <div class="form-row field-reference aligned">
-      {{ field.errors }}
 
-      {{ field.label_tag }}
-      {% render_field field %}
-
-      <div class="help">
-        {{ field.help_text }}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
+  {% include "include/form.html" %}
   {% include "include/submit_row.html" %}
 
 </form>
