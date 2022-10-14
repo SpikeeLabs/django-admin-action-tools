@@ -1,5 +1,5 @@
 import functools
-from typing import Dict
+from typing import Callable, Dict
 
 from django.contrib.admin import helpers
 from django.contrib.admin.exceptions import DisallowedModelAdminToField
@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db.models import FileField, ImageField, ManyToManyField, Model, QuerySet
 from django.forms import ModelForm
+from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control
@@ -25,7 +26,10 @@ from admin_action_tools.constants import (
     SAVE_ACTIONS,
     SAVE_AND_CONTINUE,
     SAVE_AS_NEW,
+    ToolAction,
 )
+from admin_action_tools.templatetags.formatting import back_url
+from admin_action_tools.toolchain import ToolChain, add_finishing_step
 from admin_action_tools.utils import (
     format_cache_key,
     get_admin_change_url,
@@ -388,6 +392,44 @@ class AdminConfirmMixin(BaseMixin):
         }
         return self.render_change_confirmation(request, context)
 
+    def run_confirm_tool(self, func: Callable, request: HttpRequest, queryset_or_object):
+        tool_chain: ToolChain = ToolChain(request)
+        step = tool_chain.get_next_step(CONFIRM_ACTION)
+
+        # First called by `Go` which would not have confirm_action in params
+        if step == ToolAction.CONFIRMED:
+            return func(self, request, queryset_or_object)
+
+        if step == ToolAction.CANCEL:
+            tool_chain.clear_tool_chain()
+            queryset: QuerySet = self.to_queryset(request, queryset_or_object)
+            url = back_url(queryset, self.model._meta)
+            return HttpResponseRedirect(url)
+
+        # get_actions will only return the actions that are allowed
+        has_perm = self._get_actions(request).get(func.__name__) is not None
+
+        action_display_name = snake_to_title_case(func.__name__)
+        title = f"Confirm Action: {action_display_name}"
+        queryset: QuerySet = self.to_queryset(request, queryset_or_object)
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": title,
+            "queryset": queryset,
+            "has_perm": has_perm,
+            "action": func.__name__,
+            "action_display_name": action_display_name,
+            "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
+            "submit_name": "confirm_action",
+            "submit_action": CONFIRM_ACTION,
+            "submit_text": "Confirm",
+            "back_text": "Back",
+        }
+
+        # Display confirmation page
+        return self.render_action_confirmation(request, context)
+
 
 def confirm_action(func):
     """
@@ -398,31 +440,11 @@ def confirm_action(func):
     return to the changelist without performing action.
     """
 
+    # make sure tools chain is setup
+    func = add_finishing_step(func)
+
     @functools.wraps(func)
     def func_wrapper(modeladmin: AdminConfirmMixin, request, queryset_or_object):
-        # First called by `Go` which would not have confirm_action in params
-        if request.POST.get(CONFIRM_ACTION):
-            return func(modeladmin, request, queryset_or_object)
-
-        # get_actions will only return the actions that are allowed
-        has_perm = modeladmin._get_actions(request).get(func.__name__) is not None
-
-        action_display_name = snake_to_title_case(func.__name__)
-        title = f"Confirm Action: {action_display_name}"
-        queryset: QuerySet = modeladmin.to_queryset(request, queryset_or_object)
-
-        context = {
-            **modeladmin.admin_site.each_context(request),
-            "title": title,
-            "queryset": queryset,
-            "has_perm": has_perm,
-            "action": func.__name__,
-            "action_display_name": action_display_name,
-            "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
-            "submit_name": "confirm_action",
-        }
-
-        # Display confirmation page
-        return modeladmin.render_action_confirmation(request, context)
+        return modeladmin.run_confirm_tool(func, request, queryset_or_object)
 
     return func_wrapper

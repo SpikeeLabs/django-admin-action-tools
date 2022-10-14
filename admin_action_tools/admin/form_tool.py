@@ -1,12 +1,16 @@
+import functools
+from importlib import import_module
 from typing import Callable, Dict
 
+from django import forms
 from django.contrib.admin import helpers
 from django.db.models import QuerySet
 from django.forms import Form
 from django.http import HttpRequest
 
 from admin_action_tools.admin.base import BaseMixin
-from admin_action_tools.constants import CONFIRM_FORM
+from admin_action_tools.constants import CONFIRM_FORM, ToolAction
+from admin_action_tools.toolchain import ToolChain, add_finishing_step
 from admin_action_tools.utils import snake_to_title_case
 
 
@@ -32,12 +36,59 @@ class ActionFormMixin(BaseMixin):
             "opts": opts,
             "form": form_instance,
             "submit_action": CONFIRM_FORM,
+            "submit_text": "Continue",
+            "back_text": "Back",
         }
 
     def render_action_form(self, request: HttpRequest, context: Dict):
         return super().render_template(
             request, context, "form_tool/action_form.html", custom_template=self.action_form_template
         )
+
+    @staticmethod
+    def __get_metadata(form):
+        return {
+            "type": "form",
+            "module": form.__module__,
+            "name": form.__name__,
+        }
+
+    @staticmethod
+    def load_form(data, metadata):
+        # import_module use sys.module as a caching mechanism
+        module = import_module(metadata["module"])
+        form = getattr(module, metadata["name"])
+        form_instance: Form = form(data)
+        form_instance.is_valid()
+        return form_instance
+
+    def run_form_tool(self, func: Callable, request: HttpRequest, queryset_or_object, form: forms):
+        tool_chain: ToolChain = ToolChain(request)
+        step = tool_chain.get_next_step(CONFIRM_FORM)
+
+        if step == ToolAction.BACK:
+            # cancel ask, revert to previous form
+            data = tool_chain.rollback()
+            form_instance = form(data)
+        # First called by `Go` which would not have CONFIRM_FORM in params
+        elif step == ToolAction.CONFIRMED:
+            # form is filled
+            form_instance = form(request.POST)
+            if form_instance.is_valid():
+                metadata = self.__get_metadata(form)
+                tool_chain.set_tool(CONFIRM_FORM, form_instance.data, metadata=metadata)
+                return func(self, request, queryset_or_object)
+        elif step in {ToolAction.FORWARD, ToolAction.CANCEL}:
+            # forward to next
+            return func(self, request, queryset_or_object)
+        else:
+            form_instance = form()
+
+        queryset: QuerySet = self.to_queryset(request, queryset_or_object)
+        context = self.build_context(request, func, queryset, form_instance)
+
+        # Display form
+        return self.render_action_form(request, context)
 
 
 def add_form_to_action(form: Form):
@@ -49,20 +100,13 @@ def add_form_to_action(form: Form):
     """
 
     def add_form_to_action_decorator(func):
+
+        # make sure tools chain is setup
+        func = add_finishing_step(func)
+
+        @functools.wraps(func)
         def func_wrapper(modeladmin: ActionFormMixin, request, queryset_or_object):
-            # First called by `Go` which would not have confirm_action in params
-            if request.POST.get(CONFIRM_FORM):
-                form_instance = form(request.POST)
-                if form_instance.is_valid():
-                    return func(modeladmin, request, queryset_or_object, form=form_instance)
-            else:
-                form_instance = form()
-
-            queryset: QuerySet = modeladmin.to_queryset(request, queryset_or_object)
-            context = modeladmin.build_context(request, func, queryset, form_instance)
-
-            # Display form
-            return modeladmin.render_action_form(request, context)
+            return modeladmin.run_form_tool(func, request, queryset_or_object, form)
 
         return func_wrapper
 

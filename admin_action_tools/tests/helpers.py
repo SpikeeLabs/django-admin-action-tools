@@ -11,6 +11,13 @@ from selenium.webdriver.support.ui import Select
 from tests.test_project.settings import SELENIUM_HOST
 
 
+class RequestSessionFactory(RequestFactory):
+    def request(self, **request):
+        request = super().request(**request)
+        request.session = {}
+        return request
+
+
 class AdminConfirmTestCase(TestCase):
     """
     Helper TestCase class and common associated assertions
@@ -25,7 +32,7 @@ class AdminConfirmTestCase(TestCase):
     def setUp(self):
         cache.clear()
         self.client.force_login(self.superuser)
-        self.factory = RequestFactory()
+        self.factory = RequestSessionFactory()
 
     def _assertManyToManyFormHtml(self, rendered_content, options, selected_ids):
         # Form data should be embedded and hidden on confirmation page

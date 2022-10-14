@@ -6,6 +6,7 @@ from django.http import HttpRequest
 from django.template.response import TemplateResponse
 
 from admin_action_tools.file_cache import FileCache
+from admin_action_tools.toolchain import ToolChain
 
 
 class BaseMixin:
@@ -49,6 +50,8 @@ class BaseMixin:
         app_label = opts.app_label
 
         request.current_app = self.admin_site.name
+        tool_chain: ToolChain = ToolChain(request)
+        context["first"] = tool_chain.is_first_tool()
 
         return TemplateResponse(
             request,

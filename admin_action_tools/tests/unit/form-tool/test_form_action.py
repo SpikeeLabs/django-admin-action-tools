@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from admin_action_tools.constants import CONFIRM_FORM
+from admin_action_tools.tests.helpers import RequestSessionFactory
 from tests.factories import InventoryFactory, ShopFactory
 
 
@@ -15,7 +16,7 @@ class TestFormAction(TestCase):
 
     def setUp(self):
         self.client.force_login(self.superuser)
-        self.factory = RequestFactory()
+        self.factory = RequestSessionFactory()
         self.shop = ShopFactory()
         self.inv = InventoryFactory(shop=self.shop, quantity=10)
 

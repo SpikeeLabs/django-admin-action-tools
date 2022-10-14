@@ -1,0 +1,15 @@
+{% load i18n formatting %}
+<div class="submit-row">
+    <input type="submit" value="{% trans submit_text %}" name="{{ submit_action }}">
+    {% if first %}
+    <p class="deletelink-box">
+        <a href="{% back_url queryset opts %}" class="button cancel-link-nojs">{% trans back_text %}</a>
+    </p>
+    {% else %}
+    <input type="submit" value="{% trans back_text %}" class="cancel-btn" name="_back">
+    {% endif %}
+
+    {% if not first %}
+    <input type="submit" value="{% trans "Cancel" %}" class="cancel-btn" name="_cancel">
+    {% endif %}
+</div>

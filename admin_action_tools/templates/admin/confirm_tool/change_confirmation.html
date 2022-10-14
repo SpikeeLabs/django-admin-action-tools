@@ -36,7 +36,7 @@
 <p>{% blocktrans with escaped_object=object %}Are you sure you want to change the {{ model_name }} "{{ object_name }}"?{% endblocktrans %}</p>
 {% endif %}
 
-{% include "admin/confirm_tool/change_data.html" %}
+{% include "include/change_data.html" %}
 
 <form {% if form.is_multipart %}enctype="multipart/form-data" {% endif %} method="post" {% if add %}action="{% url opts|admin_urlname:'add'%}" {% else %}action="{% url opts|admin_urlname:'change' object_id|admin_urlquote %}" {% endif %}>{% csrf_token %}
     <div class="hidden" id="hidden-form">

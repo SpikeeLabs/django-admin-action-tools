@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n l10n admin_urls static widget_tweaks%}
+{% load i18n l10n admin_urls static widget_tweaks formatting %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -54,13 +54,7 @@
     {% endfor %}
   </div>
 
+  {% include "include/submit_row.html" %}
 
-  <div class="submit-row">
-    <input type="hidden" name="action" value="{{ action }}">
-    <input type="submit" value="{% trans 'Continue' %}" name="{{ submit_action }}">
-    <p class="deletelink-box">
-      <a href="{% url opts|admin_urlname:'changelist' %}" class="button cancel-link">{% trans "Cancel" %}</a>
-    </p>
-  </div>
 </form>
 {% endblock %}

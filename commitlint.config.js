@@ -1,6 +1,7 @@
 const scope = [
     "confirm",
-    "form"
+    "form",
+    "toolchain"
 ]
 
 module.exports = {

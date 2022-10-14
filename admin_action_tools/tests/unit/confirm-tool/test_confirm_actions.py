@@ -3,10 +3,11 @@ from unittest.mock import MagicMock
 from django.contrib.admin.options import IS_POPUP_VAR
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import Permission, User
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from admin_action_tools.constants import CONFIRM_ACTION
+from admin_action_tools.tests.helpers import RequestSessionFactory
 from tests.market.admin import ShopAdmin
 from tests.market.admin.inventory_admin import InventoryAdmin
 from tests.market.models import Inventory, Shop
@@ -21,7 +22,7 @@ class TestConfirmActions(TestCase):
 
     def setUp(self):
         self.client.force_login(self.superuser)
-        self.factory = RequestFactory()
+        self.factory = RequestSessionFactory()
 
     def test_get_changelist_should_not_be_affected(self):
         response = self.client.get(reverse("admin:market_shop_changelist"))
