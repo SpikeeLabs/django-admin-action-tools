@@ -10,6 +10,9 @@ from admin_action_tools.constants import BACK, CANCEL, CONFIRM_ACTION, CONFIRM_F
 from admin_action_tools.tests.helpers import AdminConfirmIntegrationTestCase
 from tests.factories import InventoryFactory, ShopFactory
 from tests.market.admin import shoppingmall_admin
+from tests.market.form import NoteActionForm
+
+CONFIRM_FORM_UNIQUE = f"{CONFIRM_FORM}_{NoteActionForm.__name__}"
 
 
 class FormActionTests(AdminConfirmIntegrationTestCase):
@@ -27,7 +30,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
 
         self.selenium.get(self.live_server_url + f"/admin/market/inventory/{inv1.id}/actions/add_notes")
         # Should ask for confirmation of action
-        self.assertIn(CONFIRM_FORM, self.selenium.page_source)
+        self.assertIn(CONFIRM_FORM_UNIQUE, self.selenium.page_source)
 
         elems = self.selenium.find_elements(By.CLASS_NAME, "datetimeshortcuts")
         for elem in elems:
@@ -35,7 +38,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
 
         self.selenium.find_element(By.ID, "id_note").send_keys("aaaaaa")
 
-        self.selenium.find_element(By.NAME, CONFIRM_FORM).click()
+        self.selenium.find_element(By.NAME, CONFIRM_FORM_UNIQUE).click()
         inv1.refresh_from_db()
         self.assertTrue("aaaaaa" in inv1.notes)
 
@@ -47,7 +50,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
             self.live_server_url + f"/admin/market/inventory/{inv1.id}/actions/add_notes_with_confirmation"
         )
         # Should ask for confirmation of action
-        self.assertIn(CONFIRM_FORM, self.selenium.page_source)
+        self.assertIn(CONFIRM_FORM_UNIQUE, self.selenium.page_source)
 
         elems = self.selenium.find_elements(By.CLASS_NAME, "datetimeshortcuts")
         for elem in elems:
@@ -55,7 +58,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
 
         self.selenium.find_element(By.ID, "id_note").send_keys("aaaaaa")
 
-        self.selenium.find_element(By.NAME, CONFIRM_FORM).click()
+        self.selenium.find_element(By.NAME, CONFIRM_FORM_UNIQUE).click()
 
         # Should ask for confirmation of action
         self.assertIn(CONFIRM_ACTION, self.selenium.page_source)
@@ -87,7 +90,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
         )
 
         # Should ask for confirmation form
-        self.assertIn(CONFIRM_FORM, self.selenium.page_source)
+        self.assertIn(CONFIRM_FORM_UNIQUE, self.selenium.page_source)
 
         elems = self.selenium.find_elements(By.CLASS_NAME, "datetimeshortcuts")
         for elem in elems:
@@ -95,14 +98,14 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
 
         self.selenium.find_element(By.ID, "id_note").send_keys("aaaaaa")
 
-        self.selenium.find_element(By.NAME, CONFIRM_FORM).click()
+        self.selenium.find_element(By.NAME, CONFIRM_FORM_UNIQUE).click()
 
         # Should ask for confirmation of action
         self.assertIn(CONFIRM_ACTION, self.selenium.page_source)
         self.selenium.find_element(By.NAME, BACK).click()
 
         # Should ask for confirmation form
-        self.assertIn(CONFIRM_FORM, self.selenium.page_source)
+        self.assertIn(CONFIRM_FORM_UNIQUE, self.selenium.page_source)
 
         # back again
         self.selenium.find_element(By.CLASS_NAME, "cancel-link-nojs").click()
@@ -117,7 +120,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
         )
 
         # Should ask for confirmation form
-        self.assertIn(CONFIRM_FORM, self.selenium.page_source)
+        self.assertIn(CONFIRM_FORM_UNIQUE, self.selenium.page_source)
 
         elems = self.selenium.find_elements(By.CLASS_NAME, "datetimeshortcuts")
         for elem in elems:
@@ -125,7 +128,7 @@ class FormActionTests(AdminConfirmIntegrationTestCase):
 
         self.selenium.find_element(By.ID, "id_note").send_keys("aaaaaa")
 
-        self.selenium.find_element(By.NAME, CONFIRM_FORM).click()
+        self.selenium.find_element(By.NAME, CONFIRM_FORM_UNIQUE).click()
 
         # Should ask for confirmation of action
         self.assertIn(CONFIRM_ACTION, self.selenium.page_source)

@@ -19,7 +19,9 @@ class ActionFormMixin(BaseMixin):
     # Custom templates (designed to be over-ridden in subclasses)
     action_form_template: str = None
 
-    def build_context(self, request: HttpRequest, func: Callable, queryset: QuerySet, form_instance: Form):
+    def build_context(
+        self, request: HttpRequest, func: Callable, queryset: QuerySet, form_instance: Form, tool_name: str
+    ):
         action_display_name = snake_to_title_case(func.__name__)
         title = f"Configure Action: {action_display_name}"
         opts = self.model._meta  # pylint: disable=W0212
@@ -35,7 +37,7 @@ class ActionFormMixin(BaseMixin):
             "media": self.media + form_instance.media,
             "opts": opts,
             "form": form_instance,
-            "submit_action": CONFIRM_FORM,
+            "submit_action": tool_name,
             "submit_text": "Continue",
             "back_text": "Back",
         }
@@ -64,19 +66,20 @@ class ActionFormMixin(BaseMixin):
 
     def run_form_tool(self, func: Callable, request: HttpRequest, queryset_or_object, form: forms):
         tool_chain: ToolChain = ToolChain(request)
-        step = tool_chain.get_next_step(CONFIRM_FORM)
+        tool_name = f"{CONFIRM_FORM}_{form.__name__}"
+        step = tool_chain.get_next_step(tool_name)
 
         if step == ToolAction.BACK:
             # cancel ask, revert to previous form
             data = tool_chain.rollback()
             form_instance = form(data)
-        # First called by `Go` which would not have CONFIRM_FORM in params
+        # First called by `Go` which would not have tool_name in params
         elif step == ToolAction.CONFIRMED:
             # form is filled
             form_instance = form(request.POST)
             if form_instance.is_valid():
                 metadata = self.__get_metadata(form)
-                tool_chain.set_tool(CONFIRM_FORM, form_instance.data, metadata=metadata)
+                tool_chain.set_tool(tool_name, form_instance.data, metadata=metadata)
                 return func(self, request, queryset_or_object)
         elif step in {ToolAction.FORWARD, ToolAction.CANCEL}:
             # forward to next
@@ -85,7 +88,7 @@ class ActionFormMixin(BaseMixin):
             form_instance = form()
 
         queryset: QuerySet = self.to_queryset(request, queryset_or_object)
-        context = self.build_context(request, func, queryset, form_instance)
+        context = self.build_context(request, func, queryset, form_instance, tool_name)
 
         # Display form
         return self.render_action_form(request, context)

@@ -63,3 +63,11 @@ class BaseMixin:
             ],
             context,
         )
+
+    def get_tools_result(self, tool_chain: ToolChain):
+        history = tool_chain.get_history()
+        forms = []
+        for tool_name in history:
+            data, metadata = tool_chain.get_tool(tool_name)
+            forms.append(self.load_form(data, metadata))
+        return forms

@@ -7,7 +7,7 @@ from admin_action_tools.admin import (
     add_form_to_action,
     confirm_action,
 )
-from tests.market.form import NoteActionForm
+from tests.market.form import NoteActionForm, NoteClearForm
 
 
 class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
@@ -17,7 +17,7 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     confirm_add = True
     confirmation_fields = ["quantity"]
 
-    change_actions = ["quantity_up", "add_notes", "add_notes_with_confirmation"]
+    change_actions = ["quantity_up", "add_notes", "add_notes_with_confirmation", "add_notes_with_clear"]
     changelist_actions = ["quantity_down"]
 
     @confirm_action()
@@ -38,4 +38,15 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     @confirm_action()
     def add_notes_with_confirmation(self, request, object, form=None):
         object.notes += f"\n\n{form.cleaned_data['date']}\n{form.cleaned_data['note']}"
+        object.save()
+
+    @add_form_to_action(NoteActionForm)
+    @add_form_to_action(NoteClearForm)
+    @confirm_action()
+    def add_notes_with_clear(self, request, object, forms=None):
+        add_form = forms[0]
+        reset_form = forms[1]
+        if reset_form.cleaned_data["clear_notes"]:
+            object.notes = ""
+        object.notes += f"\n\n{add_form.cleaned_data['date']}\n{add_form.cleaned_data['note']}"
         object.save()

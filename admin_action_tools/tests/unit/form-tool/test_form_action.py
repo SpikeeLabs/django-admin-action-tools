@@ -5,6 +5,9 @@ from django.urls import reverse
 from admin_action_tools.constants import CONFIRM_FORM
 from admin_action_tools.tests.helpers import RequestSessionFactory
 from tests.factories import InventoryFactory, ShopFactory
+from tests.market.form import NoteActionForm
+
+CONFIRM_FORM_UNIQUE = f"{CONFIRM_FORM}_{NoteActionForm.__name__}"
 
 
 class TestFormAction(TestCase):
@@ -41,7 +44,7 @@ class TestFormAction(TestCase):
         self.assertIn("Configure the", response.rendered_content)
 
     def test_form_action_with_valid_form(self):
-        post_params = {CONFIRM_FORM: ["Yes, I'm sure"], "date_0": "2022-10-11", "date_1": "14:33:21", "note": "Note"}
+        post_params = {CONFIRM_FORM_UNIQUE: ["Continue"], "date_0": "2022-10-11", "date_1": "14:33:21", "note": "Note"}
         response = self.client.post(
             reverse("admin:market_inventory_actions", kwargs={"pk": self.inv.pk, "tool": "add_notes"}),
             data=post_params,
@@ -56,7 +59,7 @@ class TestFormAction(TestCase):
         self.assertEqual(self.inv.notes, "This is the default\n\n2022-10-11 14:33:21+00:00\nNote")
 
     def test_form_action_with_not_valid_form(self):
-        post_params = {CONFIRM_FORM: ["Yes, I'm sure"], "date_0": "", "date_1": "", "note": "Note"}
+        post_params = {CONFIRM_FORM_UNIQUE: ["Continue"], "date_0": "", "date_1": "", "note": "Note"}
         response = self.client.post(
             reverse("admin:market_inventory_actions", kwargs={"pk": self.inv.pk, "tool": "add_notes"}),
             data=post_params,

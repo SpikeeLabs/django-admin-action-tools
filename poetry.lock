@@ -1,18 +1,21 @@
 [[package]]
 name = "apispec"
-version = "5.2.2"
+version = "6.0.0"
 description = "A pluggable API specification generator. Currently supports the OpenAPI Specification (f.k.a. the Swagger specification)."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
+[package.dependencies]
+packaging = ">=21.3"
+
 [package.extras]
-dev = ["PyYAML (>=3.10)", "prance[osv] (>=0.11)", "marshmallow (>=3.13.0)", "pytest", "mock", "flake8 (==4.0.1)", "flake8-bugbear (==22.4.25)", "pre-commit (>=2.4,<3.0)", "mypy (==0.950)", "types-pyyaml", "tox"]
-docs = ["marshmallow (>=3.13.0)", "pyyaml (==6.0)", "sphinx (==4.5.0)", "sphinx-issues (==3.0.1)", "sphinx-rtd-theme (==1.0.0)"]
-lint = ["flake8 (==4.0.1)", "flake8-bugbear (==22.4.25)", "pre-commit (>=2.4,<3.0)", "mypy (==0.950)", "types-pyyaml"]
-marshmallow = ["marshmallow (>=3.13.0)"]
-tests = ["PyYAML (>=3.10)", "prance[osv] (>=0.11)", "marshmallow (>=3.13.0)", "pytest", "mock"]
-validation = ["prance[osv] (>=0.11)"]
+dev = ["PyYAML (>=3.10)", "prance[osv] (>=0.11)", "openapi-spec-validator (<0.5)", "marshmallow (>=3.13.0)", "pytest", "mock", "flake8 (==5.0.4)", "flake8-bugbear (==22.9.23)", "pre-commit (>=2.4,<3.0)", "mypy (==0.982)", "types-pyyaml", "tox"]
+docs = ["marshmallow (>=3.13.0)", "pyyaml (==6.0)", "sphinx (==5.2.3)", "sphinx-issues (==3.0.1)", "sphinx-rtd-theme (==1.0.0)"]
+lint = ["flake8 (==5.0.4)", "flake8-bugbear (==22.9.23)", "pre-commit (>=2.4,<3.0)", "mypy (==0.982)", "types-pyyaml"]
+marshmallow = ["marshmallow (>=3.18.0)"]
+tests = ["PyYAML (>=3.10)", "prance[osv] (>=0.11)", "openapi-spec-validator (<0.5)", "marshmallow (>=3.13.0)", "pytest", "mock"]
+validation = ["prance[osv] (>=0.11)", "openapi-spec-validator (<0.5)"]
 yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
@@ -123,14 +126,14 @@ dev = ["build (==0.8.0)", "flake8 (==4.0.1)", "hashin (==0.17.0)", "pip-tools (=
 
 [[package]]
 name = "boto3"
-version = "1.24.90"
+version = "1.24.91"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.90,<1.28.0"
+botocore = ">=1.27.91,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -139,7 +142,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.90"
+version = "1.27.91"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -255,7 +258,7 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "cryptography"
-version = "38.0.2"
+version = "38.0.1"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 category = "dev"
 optional = false
@@ -1457,7 +1460,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "flake8 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f9a8746988e4388c3c9f444aebd354cbc36792af65c8447f4925c04bdeeccc77"
+content-hash = "67dfe44cca3259fda21ee9cfb6acc73a46ac8a4a678c9b703e0021e2610b56d6"
 
 [metadata.files]
 apispec = []

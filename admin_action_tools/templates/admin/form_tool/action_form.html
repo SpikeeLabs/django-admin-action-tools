@@ -33,7 +33,7 @@
   <li>{{ obj }}</li>
   {% endfor %}
 </ul>
-<form method="post">
+<form method="post" novalidate>
   {% csrf_token %}
   {% for obj in queryset %}
   <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">

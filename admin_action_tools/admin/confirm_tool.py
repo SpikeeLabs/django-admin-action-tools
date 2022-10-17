@@ -21,7 +21,6 @@ from admin_action_tools.constants import (
     CONFIRM_ACTION,
     CONFIRM_ADD,
     CONFIRM_CHANGE,
-    CONFIRM_FORM,
     CONFIRMATION_RECEIVED,
     SAVE,
     SAVE_ACTIONS,
@@ -407,11 +406,7 @@ class AdminConfirmMixin(BaseMixin):
             url = back_url(queryset, self.model._meta)
             return HttpResponseRedirect(url)
 
-        # FIXME: crud implementation for now
-        data, metadata = tool_chain.get_tool(CONFIRM_FORM)
-        form_instance = None
-        if display_form and data:
-            form_instance = self.load_form(data, metadata)
+        form_instance = self.get_tools_result(tool_chain)
 
         # get_actions will only return the actions that are allowed
         has_perm = self._get_actions(request).get(func.__name__) is not None
@@ -432,7 +427,7 @@ class AdminConfirmMixin(BaseMixin):
             "submit_action": CONFIRM_ACTION,
             "submit_text": "Confirm",
             "back_text": "Back",
-            "form": form_instance,
+            "forms": form_instance,
             "readonly": True,
         }
 

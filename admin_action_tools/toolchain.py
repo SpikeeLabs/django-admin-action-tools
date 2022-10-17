@@ -1,15 +1,11 @@
+from __future__ import annotations
+
 import functools
 from typing import Dict, Optional, Tuple
 
 from django.http import HttpRequest
 
-from admin_action_tools.constants import (
-    BACK,
-    CANCEL,
-    CONFIRM_FORM,
-    FUNCTION_MARKER,
-    ToolAction,
-)
+from admin_action_tools.constants import BACK, CANCEL, FUNCTION_MARKER, ToolAction
 
 
 def gather_tools(func):
@@ -20,18 +16,20 @@ def gather_tools(func):
 
     @functools.wraps(func)
     def func_wrapper(modeladmin, request, queryset_or_object):
-        tool_chain: ToolChain = ToolChain(request)
 
-        # get data
-        data, metadata = tool_chain.get_tool(CONFIRM_FORM)
+        tool_chain: ToolChain = ToolChain(request)
+        # get result
+        forms = modeladmin.get_tools_result(tool_chain)
+        kwargs = {}
+        if len(forms) == 1:
+            kwargs["form"] = forms[0]
+        elif len(forms) > 1:
+            kwargs["forms"] = forms
+
         # clear session
         tool_chain.clear_tool_chain()
-        # FIXME: crud implementation for now
-        if data:
-            form_instance = modeladmin.load_form(data, metadata)
-            return func(modeladmin, request, queryset_or_object, form=form_instance)
 
-        return func(modeladmin, request, queryset_or_object)
+        return func(modeladmin, request, queryset_or_object, **kwargs)
 
     return func_wrapper
 
@@ -83,12 +81,16 @@ class ToolChain:
         return data
 
     def is_first_tool(self):
+        self.ensure_default()
         return not self.session["toolchain"]["history"]
 
     def get_next_step(self, tool_name: str) -> ToolAction:
         if self.is_cancel():
             return ToolAction.CANCEL
         if self.is_rollback():
+            tool_to_rollback = self.get_history()[-1]
+            if tool_to_rollback != tool_name:
+                return ToolAction.FORWARD
             return ToolAction.BACK
         if tool_name in self.request.POST:
             return ToolAction.CONFIRMED
@@ -101,3 +103,7 @@ class ToolChain:
         data.pop("csrfmiddlewaretoken", None)
         metadata = metadata or {}
         return {"data": data, "metadata": metadata}
+
+    def get_history(self):
+        self.ensure_default()
+        return self.session["toolchain"]["history"]

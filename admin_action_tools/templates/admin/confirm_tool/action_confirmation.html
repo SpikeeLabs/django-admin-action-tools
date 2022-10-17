@@ -33,19 +33,19 @@
   {% endfor %}
 </ul>
 
+{% for form in forms %}
 {% include "include/form.html" %}
+{% endfor %}
+
 
 <form method="post">{% csrf_token %}
   {% for obj in queryset %}
   <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
   {% endfor %}
   <input type="hidden" name="action" value="{{ action }}">
-
-
   {% include "include/submit_row.html" %}
-
-
 </form>
+
 {% else %}
 <p>{% trans "You don't have permissions to perform action" %} {{ action_display_name }} {% trans 'on' %} {{ opts.verbose_name_plural|capfirst }}</p>
 <br />

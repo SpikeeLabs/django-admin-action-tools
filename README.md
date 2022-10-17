@@ -179,11 +179,11 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
         change_actions = ["object_action"]
 
         @add_form_to_action(NoteActionForm)
-        def action1(modeladmin, request, queryset):
+        def action1(modeladmin, request, queryset, form=None):
             # Do something with the queryset
 
         @add_form_to_action(NoteActionForm)
-        def object_action(modeladmin, request, object):
+        def object_action(modeladmin, request, object, form=None):
             # Do something with the object
 ```
 
@@ -199,7 +199,7 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 
         @add_form_to_action(NoteActionForm)
         @confirm_action()
-        def action1(self, request, object):
+        def action1(self, request, object, form=None):
             # Do something with the object
 ```
 This will chain form and confirmation.
@@ -216,9 +216,27 @@ If you only want the action (same as confirm only), you can pass the following a
 
         @add_form_to_action(NoteActionForm)
         @confirm_action(display_form=False)
-        def action1(self, request, object):
-            # Do something with the object
+        def action1(self, request, object, form=None):
+            # Do something with the object and form
 ```
+
+```py
+    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from django_object_actions import DjangoObjectActions
+    from myapp.form import NoteActionForm, SecondForm
+
+    class MyModelAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1"]
+
+        @add_form_to_action(NoteActionForm)
+        @add_form_to_action(SecondForm)
+        @confirm_action()
+        def action1(self, request, object, forms=None):
+            # Do something with the object and forms
+```
+This will chain 2 forms and confirmation.
+The confirmation page will have the actions & form values displayed.
+
 
 ## Development
 Check out our [development process](docs/development_process.md) if you're interested.
