@@ -392,7 +392,9 @@ class AdminConfirmMixin(BaseMixin):
         }
         return self.render_change_confirmation(request, context)
 
-    def run_confirm_tool(self, func: Callable, request: HttpRequest, queryset_or_object, display_form):
+    def run_confirm_tool(
+        self, func: Callable, request: HttpRequest, queryset_or_object, display_form: bool, display_queryset: bool
+    ):
         tool_chain: ToolChain = ToolChain(request)
         step = tool_chain.get_next_step(CONFIRM_ACTION)
 
@@ -406,7 +408,7 @@ class AdminConfirmMixin(BaseMixin):
             url = back_url(queryset, self.model._meta)
             return HttpResponseRedirect(url)
 
-        form_instance = self.get_tools_result(tool_chain)
+        form_instance = self.get_tools_result(tool_chain) if display_form else None
 
         # get_actions will only return the actions that are allowed
         has_perm = self._get_actions(request).get(func.__name__) is not None
@@ -418,7 +420,7 @@ class AdminConfirmMixin(BaseMixin):
         context = {
             **self.admin_site.each_context(request),
             "title": title,
-            "queryset": queryset,
+            "queryset": queryset if display_queryset else [],
             "has_perm": has_perm,
             "action": func.__name__,
             "action_display_name": action_display_name,
@@ -435,7 +437,7 @@ class AdminConfirmMixin(BaseMixin):
         return self.render_action_confirmation(request, context)
 
 
-def confirm_action(display_form=True):
+def confirm_action(display_form=True, display_queryset=True):
     """
     @confirm_action() function wrapper for Django ModelAdmin actions
     Will redirect to a confirmation page to ask for confirmation
@@ -451,7 +453,7 @@ def confirm_action(display_form=True):
 
         @functools.wraps(func)
         def func_wrapper(modeladmin: AdminConfirmMixin, request, queryset_or_object):
-            return modeladmin.run_confirm_tool(func, request, queryset_or_object, display_form)
+            return modeladmin.run_confirm_tool(func, request, queryset_or_object, display_form, display_queryset)
 
         return func_wrapper
 

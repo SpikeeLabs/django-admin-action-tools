@@ -18,7 +18,7 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     confirmation_fields = ["quantity"]
 
     change_actions = ["quantity_up", "add_notes", "add_notes_with_confirmation", "add_notes_with_clear"]
-    changelist_actions = ["quantity_down"]
+    changelist_actions = ["quantity_down", "add_notes_with_confirmation_many", "add_notes_with_confirmation_no_form"]
 
     @confirm_action()
     def quantity_up(self, request, obj):
@@ -33,6 +33,20 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     def add_notes(self, request, object, form=None):
         object.notes += f"\n\n{form.cleaned_data['date']}\n{form.cleaned_data['note']}"
         object.save()
+
+    @add_form_to_action(NoteActionForm, display_queryset=False)
+    @confirm_action(display_queryset=False)
+    def add_notes_with_confirmation_many(self, request, queryset, form=None):
+        for object in queryset:
+            object.notes += f"\n\n{form.cleaned_data['date']}\n{form.cleaned_data['note']}"
+            object.save()
+
+    @add_form_to_action(NoteActionForm)
+    @confirm_action(display_form=False)
+    def add_notes_with_confirmation_no_form(self, request, queryset, form=None):
+        for object in queryset:
+            object.notes += f"\n\n{form.cleaned_data['date']}\n{form.cleaned_data['note']}"
+            object.save()
 
     @add_form_to_action(NoteActionForm)
     @confirm_action()

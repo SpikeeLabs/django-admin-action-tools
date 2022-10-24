@@ -237,6 +237,23 @@ If you only want the action (same as confirm only), you can pass the following a
 This will chain 2 forms and confirmation.
 The confirmation page will have the actions & form values displayed.
 
+if you want to not display the impacted objects, you can use
+
+```py
+    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from django_object_actions import DjangoObjectActions
+    from myapp.form import NoteActionForm, SecondForm
+
+    class MyModelAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1"]
+
+        @add_form_to_action(NoteActionForm, display_queryset=False)
+        @add_form_to_action(SecondForm, display_queryset=False)
+        @confirm_action(display_queryset=False)
+        def action1(self, request, object, forms=None):
+            # Do something with the object and forms
+```
+
 
 ## Development
 Check out our [development process](docs/development_process.md) if you're interested.

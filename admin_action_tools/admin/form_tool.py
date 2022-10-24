@@ -20,7 +20,13 @@ class ActionFormMixin(BaseMixin):
     action_form_template: str = None
 
     def build_context(
-        self, request: HttpRequest, func: Callable, queryset: QuerySet, form_instance: Form, tool_name: str
+        self,
+        request: HttpRequest,
+        func: Callable,
+        queryset: QuerySet,
+        form_instance: Form,
+        tool_name: str,
+        display_queryset: bool,
     ):
         action_display_name = snake_to_title_case(func.__name__)
         title = f"Configure Action: {action_display_name}"
@@ -33,7 +39,7 @@ class ActionFormMixin(BaseMixin):
             "action_display_name": action_display_name,
             "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
             "submit_name": "confirm_action",
-            "queryset": queryset,
+            "queryset": queryset if display_queryset else [],
             "media": self.media + form_instance.media,
             "opts": opts,
             "form": form_instance,
@@ -64,7 +70,9 @@ class ActionFormMixin(BaseMixin):
         form_instance.is_valid()
         return form_instance
 
-    def run_form_tool(self, func: Callable, request: HttpRequest, queryset_or_object, form: forms):
+    def run_form_tool(
+        self, func: Callable, request: HttpRequest, queryset_or_object, form: forms, display_queryset: bool
+    ):
         tool_chain: ToolChain = ToolChain(request)
         tool_name = f"{CONFIRM_FORM}_{form.__name__}"
         step = tool_chain.get_next_step(tool_name)
@@ -88,13 +96,13 @@ class ActionFormMixin(BaseMixin):
             form_instance = form()
 
         queryset: QuerySet = self.to_queryset(request, queryset_or_object)
-        context = self.build_context(request, func, queryset, form_instance, tool_name)
+        context = self.build_context(request, func, queryset, form_instance, tool_name, display_queryset)
 
         # Display form
         return self.render_action_form(request, context)
 
 
-def add_form_to_action(form: Form):
+def add_form_to_action(form: Form, display_queryset=True):
     """
     @add_form_to_action function wrapper for Django ModelAdmin actions
     Will redirect to a form page to ask for more information
@@ -109,7 +117,7 @@ def add_form_to_action(form: Form):
 
         @functools.wraps(func)
         def func_wrapper(modeladmin: ActionFormMixin, request, queryset_or_object):
-            return modeladmin.run_form_tool(func, request, queryset_or_object, form)
+            return modeladmin.run_form_tool(func, request, queryset_or_object, form, display_queryset)
 
         return func_wrapper
 
