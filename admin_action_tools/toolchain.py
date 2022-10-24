@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 
 from django.http import HttpRequest
@@ -45,27 +46,53 @@ class ToolChain:
     def __init__(self, request: HttpRequest) -> None:
         self.request = request
         self.session = request.session
-        self.ensure_default()
+        self.name = f"toolchain{request.path}"
+        self._get_data()
+        self.data.setdefault("history", [])
 
-    def ensure_default(self):
-        self.session.setdefault("toolchain", {})
-        self.session["toolchain"].setdefault("history", [])
+    def _get_data(self):
+        old_data = self.session.get(self.name, {})
+        expire_at = old_data.get("expire_at")
 
-    def get_toolchain(self) -> Dict:
-        return self.session.get("toolchain", {})
+        if expire_at:
+            expire_at = datetime.fromisoformat(expire_at)
 
-    def set_tool(self, tool_name: str, data: dict, metadata=None) -> None:
-        self.session["toolchain"]["history"].append(tool_name)
-        cleaned_data = self.__clean_data(data, metadata)
-        self.session["toolchain"].update({tool_name: cleaned_data})
+        if not old_data:
+            self.data = {"expire_at": self._get_expiration()}
+            self._save()
+        elif expire_at and expire_at < datetime.now():
+            self.data = {"expire_at": self._get_expiration()}
+            self._save()
+        else:
+            self.data = old_data
+
+    def _update_expire_at(self):
+        self.data["expire_at"] = self._get_expiration()
+        self._save()
+
+    @staticmethod
+    def _get_expiration():
+        return (datetime.now() + timedelta(seconds=60)).isoformat()
+
+    def _save(self):
+        self.session[self.name] = self.data
         self.session.modified = True
 
+    def get_toolchain(self) -> Dict:
+        return self.data
+
+    def set_tool(self, tool_name: str, data: dict, metadata=None) -> None:
+        self.data["history"].append(tool_name)
+        cleaned_data = self.__clean_data(data, metadata)
+        self.data.update({tool_name: cleaned_data})
+        self._save()
+
     def get_tool(self, tool_name: str) -> Tuple[Optional[dict], Optional[dict]]:
-        tool = self.session.get("toolchain", {}).get(tool_name, {})
+        tool = self.data.get(tool_name, {})
         return tool.get("data"), tool.get("metadata")
 
     def clear_tool_chain(self):
-        self.session.pop("toolchain", None)
+        self.session.pop(self.name, None)
 
     def is_rollback(self):
         return BACK in self.request.POST
@@ -74,17 +101,17 @@ class ToolChain:
         return CANCEL in self.request.POST
 
     def rollback(self):
-        tool_name = self.session["toolchain"]["history"].pop()
+        tool_name = self.data["history"].pop()
         data, _ = self.get_tool(tool_name)
-        del self.session["toolchain"][tool_name]
-        self.session.modified = True
+        del self.data[tool_name]
+        self._save()
         return data
 
     def is_first_tool(self):
-        self.ensure_default()
-        return not self.session["toolchain"]["history"]
+        return not self.data["history"]
 
     def get_next_step(self, tool_name: str) -> ToolAction:
+        self._update_expire_at()
         if self.is_cancel():
             return ToolAction.CANCEL
         if self.is_rollback():
@@ -105,5 +132,4 @@ class ToolChain:
         return {"data": data, "metadata": metadata}
 
     def get_history(self):
-        self.ensure_default()
-        return self.session["toolchain"]["history"]
+        return self.data["history"]

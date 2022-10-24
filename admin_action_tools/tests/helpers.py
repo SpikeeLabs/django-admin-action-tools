@@ -12,9 +12,13 @@ from tests.test_project.settings import SELENIUM_HOST
 
 
 class RequestSessionFactory(RequestFactory):
+    def __init__(self, session, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.session = session
+
     def request(self, **request):
         request = super().request(**request)
-        request.session = {}
+        request.session = self.session
         return request
 
 
@@ -32,7 +36,7 @@ class AdminConfirmTestCase(TestCase):
     def setUp(self):
         cache.clear()
         self.client.force_login(self.superuser)
-        self.factory = RequestSessionFactory()
+        self.factory = RequestSessionFactory(self.client.session)
 
     def _assertManyToManyFormHtml(self, rendered_content, options, selected_ids):
         # Form data should be embedded and hidden on confirmation page

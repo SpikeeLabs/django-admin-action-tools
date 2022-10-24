@@ -1,16 +1,15 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
 from django.urls import reverse
 
 from admin_action_tools.constants import CONFIRM_FORM
-from admin_action_tools.tests.helpers import RequestSessionFactory
+from admin_action_tools.tests.helpers import AdminConfirmTestCase
 from tests.factories import InventoryFactory, ShopFactory
 from tests.market.form import NoteActionForm
 
 CONFIRM_FORM_UNIQUE = f"{CONFIRM_FORM}_{NoteActionForm.__name__}"
 
 
-class TestFormAction(TestCase):
+class TestFormAction(AdminConfirmTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.superuser = User.objects.create_superuser(  # nosec
@@ -18,8 +17,7 @@ class TestFormAction(TestCase):
         )
 
     def setUp(self):
-        self.client.force_login(self.superuser)
-        self.factory = RequestSessionFactory()
+        super().setUp()
         self.shop = ShopFactory()
         self.inv = InventoryFactory(shop=self.shop, quantity=10)
 
