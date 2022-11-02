@@ -46,7 +46,6 @@ pylama = "^8.4.1"
 Pillow = "^9.2.0"
 toml = "^0.10.2"
 django-object-actions = "^4.0.0"
-cryptography = "38.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
