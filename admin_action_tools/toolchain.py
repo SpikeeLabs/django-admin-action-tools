@@ -55,7 +55,11 @@ class ToolChain:
         expire_at = old_data.get("expire_at")
 
         if expire_at:
-            expire_at = datetime.fromisoformat(expire_at)
+            try:
+                expire_at = datetime.fromisoformat(expire_at)
+            except Exception:  # pylint: disable=broad-except
+                expire_at = None
+                old_data = None
 
         if not old_data:
             self.data = {"expire_at": self._get_expiration()}
