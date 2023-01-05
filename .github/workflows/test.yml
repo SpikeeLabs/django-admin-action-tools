@@ -55,15 +55,13 @@ jobs:
         sudo chown -R $USER:$USER ${{ github.workspace }}
       # required because actions/checkout@2 wants to delete the /tmp/localstack folder
     - uses: actions/checkout@v3
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         cache: "poetry"
-    - name: install poetry
-      uses: abatilo/actions-poetry@v2.0.0
-      with:
-        poetry-version: ${{ matrix.poetry-version }}
     - name: Install dependencies
       run: |
         poetry update django==${{ matrix.django-version }}
