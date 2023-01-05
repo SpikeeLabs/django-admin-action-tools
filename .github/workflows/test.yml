@@ -22,7 +22,7 @@ jobs:
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
           # enable persistence
-          DATA_DIR: /tmp/localstack/data
+          DATA_DIR: /var/lib/localstack/data
           LAMBDA_EXECUTOR: local
           DOCKER_HOST: unix:///var/run/docker.sock
           DEBUG: true
@@ -30,7 +30,7 @@ jobs:
           # It doesn't seem like the scripts in entrypoint are being ran... or they are not copied over since
           # the checkout action happens after init services on Github Actions
           # - "${{ github.workspace }}/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d"
-          - "${{ github.workspace }}/tmp/localstack:/tmp/localstack"
+          - "${{ github.workspace }}/tmp/localstack:/var/lib/localstack"
           - "/var/run/docker.sock:/var/run/docker.sock"
         ports:
           - 4566:4566
@@ -59,6 +59,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        cache: "poetry"
     - name: install poetry
       uses: abatilo/actions-poetry@v2.0.0
       with:

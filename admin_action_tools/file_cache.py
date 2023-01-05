@@ -106,5 +106,6 @@ class FileCache(object):
 
     def delete_all(self):
         "Delete all cached file data from cache."
-        self.cache.delete_many(self.cached_keys)
-        self.cached_keys = []
+        if self.cached_keys:
+            self.cache.delete_many(self.cached_keys)
+            self.cached_keys = []
