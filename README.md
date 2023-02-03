@@ -15,9 +15,9 @@
 - [x] AdminFormMixin
     AdminFormMixin is a mixin for ModelAdmin to add a form to configure your actions.
 
-- [ ] Ability to Confirm an action form with a preview of the objects and form data
+- [x] Ability to Confirm an action form with a preview of the objects and form data
 
-- [ ] Add support to chain form
+- [x] Add support to chain form
 
 ---
 ## ScreenShot
