@@ -4,7 +4,7 @@ import functools
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 
-from django.http import HttpRequest
+from django.http import HttpRequest, QueryDict
 
 from admin_action_tools.constants import BACK, CANCEL, FUNCTION_MARKER, ToolAction
 
@@ -129,11 +129,20 @@ class ToolChain:
             return ToolAction.FORWARD
         return ToolAction.INIT
 
-    def __clean_data(self, data, metadata):
-        data = data.dict()
-        data.pop("csrfmiddlewaretoken", None)
+    def __clean_data(self, data: QueryDict, metadata):
+        new_data = data.dict()
+        new_data.pop("csrfmiddlewaretoken", None)
+        cleaned_data = self.__process_query_dict(new_data, data)
+
         metadata = metadata or {}
-        return {"data": data, "metadata": metadata}
+        return {"data": cleaned_data, "metadata": metadata}
+
+    def __process_query_dict(self, new_data: dict, data: QueryDict):
+        for key in new_data:
+            old_field = data.getlist(key)
+            if len(old_field) > 1:
+                new_data[key] = old_field
+        return new_data
 
     def get_history(self):
         return self.data["history"]

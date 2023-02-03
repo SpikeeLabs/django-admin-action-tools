@@ -1,3 +1,5 @@
+from django.http import QueryDict
+
 from admin_action_tools.constants import CONFIRM_FORM
 from admin_action_tools.tests.helpers import AdminConfirmTestCase
 from admin_action_tools.toolchain import ToolChain
@@ -52,3 +54,11 @@ class TestToolchain(AdminConfirmTestCase):
 
         # test data is save
         self.assertEqual(request.session[name]["history"], [])
+
+    def test_toolchain_querydict(self):
+        data = QueryDict("a=1&a=2&a=3")
+        request = self.factory.request()
+        toolchain = ToolChain(request)
+        res = toolchain._ToolChain__clean_data(data, {})
+
+        self.assertEqual(res["data"], {"a": ["1", "2", "3"]})
