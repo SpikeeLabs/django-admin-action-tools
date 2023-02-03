@@ -61,4 +61,4 @@ class TestToolchain(AdminConfirmTestCase):
         toolchain = ToolChain(request)
         res = toolchain._ToolChain__clean_data(data, {})
 
-        self.assertEqual(res["data"], {"a": ["1", "2", "3"]})
+        self.assertEqual(res["data"], "a=1&a=2&a=3")

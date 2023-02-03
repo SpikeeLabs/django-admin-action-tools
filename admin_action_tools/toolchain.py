@@ -93,7 +93,7 @@ class ToolChain:
 
     def get_tool(self, tool_name: str) -> Tuple[Optional[dict], Optional[dict]]:
         tool = self.data.get(tool_name, {})
-        return tool.get("data"), tool.get("metadata")
+        return QueryDict(tool.get("data")), tool.get("metadata")
 
     def clear_tool_chain(self):
         self.session.pop(self.name, None)
@@ -130,19 +130,11 @@ class ToolChain:
         return ToolAction.INIT
 
     def __clean_data(self, data: QueryDict, metadata):
-        new_data = data.dict()
+        new_data = data.copy()
         new_data.pop("csrfmiddlewaretoken", None)
-        cleaned_data = self.__process_query_dict(new_data, data)
 
         metadata = metadata or {}
-        return {"data": cleaned_data, "metadata": metadata}
-
-    def __process_query_dict(self, new_data: dict, data: QueryDict):
-        for key in new_data:
-            old_field = data.getlist(key)
-            if len(old_field) > 1:
-                new_data[key] = old_field
-        return new_data
+        return {"data": new_data.urlencode(), "metadata": metadata}
 
     def get_history(self):
         return self.data["history"]
