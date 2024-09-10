@@ -1,10 +1,15 @@
+from unittest import mock
+
+from django import forms
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+from admin_action_tools.admin.form_tool import ActionFormMixin
 from admin_action_tools.constants import CONFIRM_FORM
 from admin_action_tools.tests.helpers import AdminConfirmTestCase
 from tests.factories import InventoryFactory, ShopFactory
 from tests.market.form import NoteActionForm
+from tests.market.models import Shop
 
 CONFIRM_FORM_UNIQUE = f"{CONFIRM_FORM}_{NoteActionForm.__name__}"
 
@@ -77,3 +82,26 @@ class TestFormAction(AdminConfirmTestCase):
 
         self.assertIn("Configure the", response.rendered_content)
         self.assertIn("This field is required.", response.rendered_content)
+
+    def test_get_instance_with_model_form(self) -> None:
+        form_data = mock.MagicMock(spec=dict)
+        model_instance = mock.MagicMock()
+
+        model_form_class = forms.modelform_factory(Shop, form=forms.ModelForm, fields="__all__")
+        form_instance = ActionFormMixin.get_instance(model_form_class, data=form_data, instance=model_instance)
+
+        self.assertIsInstance(form_instance, model_form_class)
+        self.assertEqual(form_instance.data, form_data)
+        self.assertEqual(form_instance.instance, model_instance)
+        self.assertIsInstance(form_instance, model_form_class)
+
+    def test_get_instance_with_form(self) -> None:
+        form_data = mock.MagicMock(spec=dict)
+
+        form_class = forms.Form
+        form_instance = ActionFormMixin.get_instance(form_class, data=form_data)
+
+        self.assertIsInstance(form_instance, form_class)
+        self.assertEqual(form_instance.data, form_data)
+        self.assertFalse(hasattr(form_instance, "instance"))
+        self.assertIsInstance(form_instance, form_class)
