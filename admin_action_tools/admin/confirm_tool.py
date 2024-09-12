@@ -206,7 +206,7 @@ class AdminConfirmMixin(BaseMixin):
                 log("Warning: no cached_object")
                 return
 
-            if type(cached_object) != self.model:
+            if not isinstance(cached_object, self.model):
                 # Do not use cache if the model doesn't match this model
                 log(f"Warning: cached_object is not of type {self.model}")
                 return

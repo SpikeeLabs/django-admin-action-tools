@@ -84,7 +84,7 @@ jobs:
       run: poetry run coverage xml
 
     - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       if: always()
       with:
         verbose: true
@@ -92,6 +92,7 @@ jobs:
         flags: '${{ matrix.django-version }},${{ matrix.python-version }}'
         name: codecov-umbrella
         fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   gather_all:
     if: ${{ always() }}
