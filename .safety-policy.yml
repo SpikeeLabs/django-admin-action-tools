@@ -1,0 +1,65 @@
+# Safety Security and License Configuration file
+security:
+  ignore-vulnerabilities:
+    59293:
+      reason: we don't rely on it.
+    64976:
+      reason: we don't rely on it.
+    72110:
+      reason: we don't rely on it.
+    72109:
+      reason: we don't rely on it.
+    72111:
+      reason: we don't rely on it.
+    72095:
+      reason: we don't rely on it.
+    65771:
+      reason: we don't rely on it.
+    72519:
+      reason: we don't rely on it.
+    72520:
+      reason: we don't rely on it.
+    72515:
+      reason: we don't rely on it.
+    72521:
+      reason: we don't rely on it.
+    61586:
+      reason: we don't rely on it.
+    60956:
+      reason: we don't rely on it.
+    62126:
+      reason: we don't rely on it.
+    66742:
+      reason: fml, dev deps
+    64459:
+      reason: fml, dev deps
+    64396:
+      reason: fml, dev deps
+    67895:
+      reason: fml, dev deps
+    42837:
+      reason: fml, dev deps
+    42836:
+      reason: fml, dev deps
+    67136:
+      reason: fml, dev deps
+    61489:
+      reason: fml, dev deps
+    64436:
+      reason: fml, dev deps
+    64437:
+      reason: fml, dev deps
+    62156:
+      reason: fml, dev deps
+    58910:
+      reason: fml, dev deps
+    70716:
+      reason: fml, dev deps
+    70715:
+      reason: fml, dev deps
+    63073:
+      reason: fml, dev deps
+    58755:
+      reason: fml, dev deps
+    71064:
+      reason: fml, dev deps

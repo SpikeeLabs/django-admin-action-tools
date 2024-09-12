@@ -1,6 +1,7 @@
 """
 Tests confirmation of action that uses django-object-action
 """
+
 from importlib import reload
 
 from selenium.webdriver.common.by import By
