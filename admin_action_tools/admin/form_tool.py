@@ -15,7 +15,6 @@ from admin_action_tools.utils import snake_to_title_case
 
 
 class ActionFormMixin(BaseMixin):
-
     # Custom templates (designed to be over-ridden in subclasses)
     action_form_template: str = None
 
@@ -62,11 +61,11 @@ class ActionFormMixin(BaseMixin):
         }
 
     @staticmethod
-    def load_form(data, metadata):
+    def load_form(data, files, metadata):
         # import_module use sys.module as a caching mechanism
         module = import_module(metadata["module"])
         form = getattr(module, metadata["name"])
-        form_instance: Form = form(data)
+        form_instance: Form = form(data, files)
         form_instance.is_valid()
         return form_instance
 
@@ -84,10 +83,10 @@ class ActionFormMixin(BaseMixin):
         # First called by `Go` which would not have tool_name in params
         elif step == ToolAction.CONFIRMED:
             # form is filled
-            form_instance = self.get_instance(form, data=request.POST, instance=queryset_or_object)
+            form_instance = self.get_instance(form, data=request.POST, files=request.FILES, instance=queryset_or_object)
             if form_instance.is_valid():
                 metadata = self.__get_metadata(form)
-                tool_chain.set_tool(tool_name, form_instance.data, metadata=metadata)
+                tool_chain.set_tool(tool_name, form_instance.data, form_instance.files, metadata=metadata)
                 return func(self, request, queryset_or_object)
         elif step in {ToolAction.FORWARD, ToolAction.CANCEL}:
             # forward to next
@@ -103,11 +102,14 @@ class ActionFormMixin(BaseMixin):
 
     @staticmethod
     def get_instance(
-        form: Type[forms.BaseForm], data: Optional[dict] = None, instance: Optional[forms.BaseForm] = None
+        form: Type[forms.BaseForm],
+        data: Optional[dict] = None,
+        files: Optional[dict] = None,
+        instance: Optional[forms.BaseForm] = None,
     ) -> forms.BaseForm:
         if issubclass(form, forms.ModelForm):  # pylint: disable=E721
-            return form(data, instance=instance)
-        return form(data)
+            return form(data, instance=instance, files=files)
+        return form(data, files=files)
 
 
 def add_form_to_action(form: Form, display_queryset=True):
@@ -119,7 +121,6 @@ def add_form_to_action(form: Form, display_queryset=True):
     """
 
     def add_form_to_action_decorator(func):
-
         # make sure tools chain is setup
         func = add_finishing_step(func)
 
