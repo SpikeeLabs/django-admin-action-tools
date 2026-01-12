@@ -9,3 +9,7 @@ class NoteActionForm(forms.Form):
 
 class NoteClearForm(forms.Form):
     clear_notes = forms.BooleanField()
+
+
+class FileActionForm(forms.Form):
+    csv_file = forms.FileField(label="CSV File for Terminals")

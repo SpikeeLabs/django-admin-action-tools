@@ -7,7 +7,7 @@ from admin_action_tools.admin import (
     add_form_to_action,
     confirm_action,
 )
-from tests.market.form import NoteActionForm, NoteClearForm
+from tests.market.form import NoteActionForm, NoteClearForm, FileActionForm
 
 
 class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):
@@ -18,7 +18,12 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     confirmation_fields = ["quantity"]
 
     change_actions = ["quantity_up", "add_notes", "add_notes_with_confirmation", "add_notes_with_clear"]
-    changelist_actions = ["quantity_down", "add_notes_with_confirmation_many", "add_notes_with_confirmation_no_form"]
+    changelist_actions = [
+        "quantity_down",
+        "add_notes_with_confirmation_many",
+        "add_notes_with_confirmation_no_form",
+        "add_file",
+    ]
 
     @confirm_action()
     def quantity_up(self, request, obj):
@@ -64,3 +69,7 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
             object.notes = ""
         object.notes += f"\n\n{add_form.cleaned_data['date']}\n{add_form.cleaned_data['note']}"
         object.save()
+
+    @add_form_to_action(FileActionForm)
+    def add_file(self, request, queryset, form=None):
+        print(form)

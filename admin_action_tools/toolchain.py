@@ -8,6 +8,9 @@ from django.http import HttpRequest, QueryDict
 
 from admin_action_tools.constants import BACK, CANCEL, FUNCTION_MARKER, ToolAction
 
+from admin_action_tools.file_cache import FileCache
+from admin_action_tools.utils import format_cache_key
+
 
 def gather_tools(func):
     """
@@ -17,7 +20,6 @@ def gather_tools(func):
 
     @functools.wraps(func)
     def func_wrapper(modeladmin, request, queryset_or_object):
-
         tool_chain: ToolChain = ToolChain(request)
         # get result
         forms = modeladmin.get_tools_result(tool_chain)
@@ -43,6 +45,8 @@ def add_finishing_step(func):
 
 
 class ToolChain:
+    _file_cache = FileCache()
+
     def __init__(self, request: HttpRequest) -> None:
         self.request = request
         self.session = request.session
@@ -85,15 +89,21 @@ class ToolChain:
     def get_toolchain(self) -> Dict:
         return self.data
 
-    def set_tool(self, tool_name: str, data: dict, metadata=None) -> None:
+    def set_tool(self, tool_name: str, data: dict, files: Optional[dict] = None, metadata=None) -> None:
         self.data["history"].append(tool_name)
-        cleaned_data = self.__clean_data(data, metadata)
+        cleaned_data = self.__clean_data(tool_name, data, files, metadata)
         self.data.update({tool_name: cleaned_data})
         self._save()
 
     def get_tool(self, tool_name: str) -> Tuple[Optional[dict], Optional[dict]]:
         tool = self.data.get(tool_name, {})
-        return QueryDict(tool.get("data")), tool.get("metadata")
+
+        new_files = {}
+        files = tool.get("files")
+        for field_name in files.keys():
+            new_files[field_name] = self._file_cache.get(format_cache_key(model=tool_name, field=field_name))
+
+        return QueryDict(tool.get("data")), new_files, tool.get("metadata")
 
     def clear_tool_chain(self):
         self.session.pop(self.name, None)
@@ -106,7 +116,7 @@ class ToolChain:
 
     def rollback(self):
         tool_name = self.data["history"].pop()
-        data, _ = self.get_tool(tool_name)
+        data, _, _ = self.get_tool(tool_name)
         del self.data[tool_name]
         self._save()
         return data
@@ -129,12 +139,18 @@ class ToolChain:
             return ToolAction.FORWARD
         return ToolAction.INIT
 
-    def __clean_data(self, data: QueryDict, metadata):
+    def __clean_data(self, tool_name: str, data: QueryDict, files, metadata):
         new_data = data.copy()
         new_data.pop("csrfmiddlewaretoken", None)
 
+        files = files or {}
+        new_files = {}
+        for field_name, data in files.items():
+            self._file_cache.set(format_cache_key(model=tool_name, field=field_name), data)
+            new_files[field_name] = data.name
+
         metadata = metadata or {}
-        return {"data": new_data.urlencode(), "metadata": metadata}
+        return {"data": new_data.urlencode(), "files": new_files, "metadata": metadata}
 
     def get_history(self):
         return self.data["history"]

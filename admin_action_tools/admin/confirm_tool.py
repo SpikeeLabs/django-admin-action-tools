@@ -160,7 +160,6 @@ class AdminConfirmMixin(BaseMixin):
         else:
             # Parse the changed data - Note that using form.changed_data would not work because initial is not set
             for name, new_value in form.cleaned_data.items():
-
                 # Since the form considers initial as the value first shown in the form
                 # It could be incorrect when user hits save, and then hits "No, go back to edit"
                 obj.refresh_from_db()
@@ -447,7 +446,6 @@ def confirm_action(display_form=True, display_queryset=True):
     """
 
     def confirm_action_decorator(func):
-
         # make sure tools chain is setup
         func = add_finishing_step(func)
 
