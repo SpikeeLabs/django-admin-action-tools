@@ -23,7 +23,7 @@ packages = [{ include = "admin_action_tools" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = ">=4.2"
+Django = ">=4.2,>=5"
 django-widget-tweaks = "^1.4"
 
 [tool.poetry.group.dev.dependencies]

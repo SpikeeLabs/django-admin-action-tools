@@ -44,3 +44,8 @@
 .hidden {
   display: none;
 }
+
+.submit-row p {
+  margin: 0;
+
+}

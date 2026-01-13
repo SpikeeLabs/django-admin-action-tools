@@ -12,4 +12,4 @@ class NoteClearForm(forms.Form):
 
 
 class FileActionForm(forms.Form):
-    csv_file = forms.FileField(label="CSV File for Terminals")
+    stocks = forms.FileField(label="CSV File for stocks")

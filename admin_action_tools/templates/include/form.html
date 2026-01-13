@@ -1,4 +1,4 @@
-{% load widget_tweaks %}
+{% load widget_tweaks formatting %}
 {% if form %}
 <div>
     {% for field in form.visible_fields %}
@@ -7,7 +7,11 @@
 
         {{ field.label_tag }}
         {% if readonly %}
+        {% if field.name in form.files %}
+        {% get_file_name form.files field.name %}
+        {% else %}
         {% render_field field|attr:"readonly:readonly" %}
+        {% endif %}
         {% else %}
         {% render_field field %}
         {% endif %}

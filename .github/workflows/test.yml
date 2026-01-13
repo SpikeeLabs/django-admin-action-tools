@@ -65,8 +65,11 @@ jobs:
         cache: "poetry"
     - name: Install dependencies
       run: |
-        poetry update django==${{ matrix.django-version }}
+        poetry add django==${{ matrix.django-version }}
         poetry install
+
+    - name: Debug Django version
+      run: poetry show django
 
     - name: Attempt to connect to localstack and create bucket
       run: |

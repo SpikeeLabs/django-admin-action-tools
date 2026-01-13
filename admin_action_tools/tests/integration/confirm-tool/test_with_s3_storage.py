@@ -46,7 +46,7 @@ class ConfirmWithS3StorageTests(AdminConfirmIntegrationTestCase):
         self.assertTrue(settings.USE_S3)
         self.assertIsNotNone(settings.AWS_ACCESS_KEY_ID)
         self.assertEqual(
-            settings.DEFAULT_FILE_STORAGE,
+            settings.STORAGES["default"]["BACKEND"],
             "tests.storage_backends.PublicMediaStorage",
         )
 

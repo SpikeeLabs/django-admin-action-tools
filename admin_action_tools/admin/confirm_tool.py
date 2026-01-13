@@ -59,7 +59,7 @@ class AdminConfirmMixin(BaseMixin):
         if self.confirmation_fields is not None:
             return self.confirmation_fields
 
-        model_fields = set([field.name for field in self.model._meta.fields])
+        model_fields = set([field.name for field in self.model._meta.fields])  # pragma: no branch
         admin_fields = set(flatten_fieldsets(self.get_fieldsets(request, obj)))
         return list(model_fields & admin_fields)
 
@@ -288,7 +288,9 @@ class AdminConfirmMixin(BaseMixin):
         `<field>-clear` inputs in them, they have to be injected into the hidden form
         on the confirmation page.
         """
-        return [input_name.split("-clear")[0] for input_name in request.POST.keys() if input_name.endswith("-clear")]
+        return [  # pragma: no branch
+            input_name.split("-clear")[0] for input_name in request.POST.keys() if input_name.endswith("-clear")
+        ]
 
     def _change_confirmation_view(self, request, object_id, form_url, extra_context):
         # This code is taken from super()._changeform_view
