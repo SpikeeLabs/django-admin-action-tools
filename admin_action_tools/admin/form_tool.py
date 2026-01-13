@@ -83,7 +83,9 @@ class ActionFormMixin(BaseMixin):
         # First called by `Go` which would not have tool_name in params
         elif step == ToolAction.CONFIRMED:
             # form is filled
-            form_instance = self.get_instance(form, data=request.POST, files=request.FILES, instance=queryset_or_object)
+            form_instance = self.get_instance(
+                form, data=request.POST, files=request.FILES, instance=queryset_or_object
+            )
             if form_instance.is_valid():
                 metadata = self.__get_metadata(form)
                 tool_chain.set_tool(tool_name, form_instance.data, form_instance.files, metadata=metadata)

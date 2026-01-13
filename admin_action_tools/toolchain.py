@@ -7,7 +7,6 @@ from typing import Dict, Optional, Tuple
 from django.http import HttpRequest, QueryDict
 
 from admin_action_tools.constants import BACK, CANCEL, FUNCTION_MARKER, ToolAction
-
 from admin_action_tools.file_cache import FileCache
 from admin_action_tools.utils import format_cache_key
 

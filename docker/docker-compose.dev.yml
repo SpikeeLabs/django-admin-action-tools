@@ -51,4 +51,4 @@ services:
       - PERSISTENCE=1
       - HOSTNAME_EXTERNAL=localstack
     volumes:
-      - "./create_bucket.sh:/docker-entrypoint-initaws.d/create_bucket.sh"
+      - "./create_bucket.sh:/etc/localstack/init/ready.d/create_bucket.sh"

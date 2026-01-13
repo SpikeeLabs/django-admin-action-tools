@@ -4,14 +4,9 @@ from django.contrib.admin.options import IS_POPUP_VAR
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
-from django.core.cache import cache
+
 from admin_action_tools.file_cache import FileCache
 from admin_action_tools.toolchain import ToolChain
-from admin_action_tools.utils import (
-    format_cache_key,
-    log,
-)
-from admin_action_tools.constants import CACHE_KEYS, CACHE_TIMEOUT
 
 
 class BaseMixin:

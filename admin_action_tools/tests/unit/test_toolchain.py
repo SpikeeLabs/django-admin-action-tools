@@ -59,6 +59,6 @@ class TestToolchain(AdminConfirmTestCase):
         data = QueryDict("a=1&a=2&a=3")
         request = self.factory.request()
         toolchain = ToolChain(request)
-        res = toolchain._ToolChain__clean_data(data, {})
+        res = toolchain._ToolChain__clean_data("Toolname", data, files={}, metadata={})
 
         self.assertEqual(res["data"], "a=1&a=2&a=3")

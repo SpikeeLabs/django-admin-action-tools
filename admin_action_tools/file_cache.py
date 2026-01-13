@@ -1,4 +1,4 @@
-""" FileCache - caches files for ModelAdmins with confirmations.
+"""FileCache - caches files for ModelAdmins with confirmations.
 
 Code modified from: https://github.com/MaistrenkoAnton/filefield-cache/blob/master/filefield_cache/cache.py
 Original copy date: April 22, 2021
