@@ -143,14 +143,21 @@ if USE_S3:
     PUBLIC_MEDIA_LOCATION = "mediafiles"
     MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/"
     MEDIA_ROOT = os.path.join(BASE_DIR, PUBLIC_MEDIA_LOCATION)
-    DEFAULT_FILE_STORAGE = "tests.storage_backends.PublicMediaStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "tests.storage_backends.PublicMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
     # static settings
     if USE_S3_STATIC:
         STATIC_LOCATION = "staticfiles"
         STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{STATIC_LOCATION}/"
         STATIC_ROOT = os.path.join(BASE_DIR, STATIC_LOCATION)
-        STATICFILES_STORAGE = "tests.storage_backends.StaticStorage"
+        STORAGES["staticfiles"]["BACKEND"] = "tests.storage_backends.StaticStorage"
     else:
         STATIC_URL = "/staticfiles/"
         STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")

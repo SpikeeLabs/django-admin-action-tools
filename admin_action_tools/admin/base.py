@@ -38,7 +38,7 @@ class BaseMixin:
         actions.extend(self.get_change_action("changelist_actions"))
 
         actions = self._filter_actions_by_permissions(request, actions)
-        return {name: (func, name, desc) for func, name, desc in actions}
+        return {name: (func, name, desc) for func, name, desc in actions}  # pragma: no branch
 
     def to_queryset(self, request: HttpRequest, object_or_queryset: Union[QuerySet, Model]) -> QuerySet:
         if not isinstance(object_or_queryset, QuerySet):

@@ -32,3 +32,8 @@ def back_url(queryset, opts):
         obj = queryset[0]
         return reverse("admin:%s_%s_change" % (opts.app_label, opts.model_name), args=[obj.pk])
     return reverse("admin:%s_%s_changelist" % (opts.app_label, opts.model_name))
+
+
+@register.simple_tag
+def get_file_name(d, key_name):
+    return getattr(d.get(key_name, {}), "name", None)
