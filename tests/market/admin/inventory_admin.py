@@ -7,7 +7,7 @@ from admin_action_tools.admin import (
     add_form_to_action,
     confirm_action,
 )
-from tests.market.form import NoteActionForm, NoteClearForm, FileActionForm
+from tests.market.form import FileActionForm, NoteActionForm, NoteClearForm
 
 
 class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, ModelAdmin):

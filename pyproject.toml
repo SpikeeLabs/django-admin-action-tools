@@ -14,18 +14,19 @@ repository = "https://github.com/SpikeeLabs/django-admin-action-tools"
 classifiers = [
     "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.0",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
 ]
 packages = [{ include = "admin_action_tools" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-Django = ">=3.2"
+python = "^3.10"
+Django = ">=4.2"
 django-widget-tweaks = "^1.4"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 setuptools = "^70.0"
 factory-boy = "^3.0"
 coverage = "^6.4"
@@ -42,9 +43,9 @@ localstack = "^1.1.0"
 pylint = "^2"
 pylint-django = "^2.5"
 black = "^22"
-pre-commit = "^2.16"
+pre-commit = "^4"
 pylama = "^8.4.1"
-Pillow = "^9.2.0"
+Pillow = "^11"
 toml = "^0.10.2"
 django-object-actions = "^4.0.0"
 
