@@ -84,8 +84,7 @@ class AdminConfirmIntegrationTestCase(LiveServerTestCase):
     def setUpClass(cls):
         cls.host = socket.gethostbyname(socket.gethostname())
         cls.selenium = webdriver.Remote(
-            command_executor=f"http://{SELENIUM_HOST}:4444/wd/hub",
-            desired_capabilities=DesiredCapabilities.FIREFOX,
+            command_executor=f"http://{SELENIUM_HOST}:4444/wd/hub", options=webdriver.FirefoxOptions()
         )
         super().setUpClass()
 

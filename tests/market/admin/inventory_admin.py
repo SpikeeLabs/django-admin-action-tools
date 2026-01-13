@@ -1,3 +1,6 @@
+import io
+from csv import DictReader
+
 from django.contrib.admin import ModelAdmin
 from django_object_actions import DjangoObjectActions
 
@@ -22,7 +25,8 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
         "quantity_down",
         "add_notes_with_confirmation_many",
         "add_notes_with_confirmation_no_form",
-        "add_file",
+        "add_stock",
+        "add_stock_with_confirm",
     ]
 
     @confirm_action()
@@ -71,5 +75,18 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
         object.save()
 
     @add_form_to_action(FileActionForm)
-    def add_file(self, request, queryset, form=None):
-        print(form)
+    def add_stock(self, request, queryset, form=None):
+        file = form.cleaned_data["stocks"].read().decode("utf-8")
+        reader = DictReader(io.StringIO(file), delimiter=";")
+        for data in reader:
+            queryset.filter(id=data["id"]).update(quantity=data["qt"])
+
+    @add_form_to_action(FileActionForm)
+    @confirm_action(display_queryset=False)
+    def add_stock_with_confirm(self, request, queryset, form=None):
+        file = form.cleaned_data["stocks"].read().decode("utf-8")
+        reader = DictReader(io.StringIO(file), delimiter=";")
+        for data in reader:
+            queryset.filter(id=data["id"]).update(quantity=data["qt"])
+
+    add_stock.attrs = {"style": "background-color: green;"}

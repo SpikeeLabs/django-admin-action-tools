@@ -9,5 +9,10 @@
   "pythonTestExplorer.testFramework": "pytest",
   "pythonTestExplorer.testplanArgs": [
     "--ds=tests.test_project.settings.test"
-  ]
+  ],
+  "python.testing.pytestArgs": [
+    "."
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
