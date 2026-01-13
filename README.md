@@ -64,7 +64,7 @@ Add `admin_action_tools` to `INSTALLED_APPS` in your project settings before `dj
 To use `ActionFormMixin` you also need to add `widget_tweaks` to the `INSTALLED_APPS`
 
 Note that this project follows the template override rules of Django.
-To override a template, your app should be listed before `admin_confirm`, `admin_form` in INSTALLED_APPS.
+To override a template, your app should be listed before `admin_action_tools` in INSTALLED_APPS.
 
 
 ## Configuration Options
@@ -105,7 +105,7 @@ It can be configured to add a confirmation page on ModelAdmin upon:
 **Confirm Change:**
 
 ```py
-    from admin_confirm import AdminConfirmMixin
+    from admin_action_tools import AdminConfirmMixin
 
     class MyModelAdmin(AdminConfirmMixin, ModelAdmin):
         confirm_change = True
@@ -117,7 +117,7 @@ This would confirm changes on changes that include modifications on`field1` and/
 **Confirm Add:**
 
 ```py
-    from admin_confirm import AdminConfirmMixin
+    from admin_action_tools import AdminConfirmMixin
 
     class MyModelAdmin(AdminConfirmMixin, ModelAdmin):
         confirm_add = True
@@ -131,7 +131,7 @@ Note: `confirmation_fields` apply to both add/change confirmations.
 **Confirm Action:**
 
 ```py
-    from admin_confirm import AdminConfirmMixin
+    from admin_action_tools import AdminConfirmMixin
 
     class MyModelAdmin(AdminConfirmMixin, ModelAdmin):
         actions = ["action1", "action2"]
@@ -155,7 +155,7 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 **Confirm Object Action:**
 
 ```py
-    from admin_confirm import AdminConfirmMixin
+    from admin_action_tools import AdminConfirmMixin
     from django_object_actions import DjangoObjectActions
 
     class MyModelAdmin(AdminConfirmMixin, DjangoObjectActions, ModelAdmin):
@@ -168,10 +168,11 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 
 
 ### AdminFormMixin
+
 **Action Form**
 
 ```py
-    from admin_confirm import ActionFormMixin, add_form_to_action
+    from admin_action_tools import ActionFormMixin, add_form_to_action
     from myapp.form import NoteActionForm
     from django_object_actions import DjangoObjectActions
 
@@ -190,7 +191,7 @@ Action confirmation will respect `allowed_permissions` and the `has_xxx_permissi
 **Chaining tools**
 
 ```py
-    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from admin_action_tools import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
     from django_object_actions import DjangoObjectActions
     from myapp.form import NoteActionForm
 
@@ -207,7 +208,7 @@ The confirmation page will have the actions & form values displayed.
 If you only want the action (same as confirm only), you can pass the following argument
 
 ```py
-    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from admin_action_tools import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
     from django_object_actions import DjangoObjectActions
     from myapp.form import NoteActionForm
 
@@ -221,7 +222,7 @@ If you only want the action (same as confirm only), you can pass the following a
 ```
 
 ```py
-    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from admin_action_tools import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
     from django_object_actions import DjangoObjectActions
     from myapp.form import NoteActionForm, SecondForm
 
@@ -234,13 +235,14 @@ If you only want the action (same as confirm only), you can pass the following a
         def action1(self, request, object, forms=None):
             # Do something with the object and forms
 ```
+
 This will chain 2 forms and confirmation.
 The confirmation page will have the actions & form values displayed.
 
 if you want to not display the impacted objects, you can use
 
 ```py
-    from admin_confirm import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from admin_action_tools import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
     from django_object_actions import DjangoObjectActions
     from myapp.form import NoteActionForm, SecondForm
 
@@ -254,6 +256,6 @@ if you want to not display the impacted objects, you can use
             # Do something with the object and forms
 ```
 
-
 ## Development
+
 Check out our [development process](docs/development_process.md) if you're interested.
