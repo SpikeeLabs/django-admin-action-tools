@@ -71,3 +71,20 @@ class BaseMixin:
             data, files, metadata = tool_chain.get_tool(tool_name)
             forms.append(self.load_form(data, files, metadata))
         return forms
+
+
+def color_action(color=None, attrs=None):
+    """
+    @color_action function wrapper for Django ModelAdmin actions
+    will color the button
+    """
+
+    def add_form_to_action_decorator(func):
+        if attrs:
+            func.attrs = attrs
+        elif color:
+            func.attrs = {"style": f"background-color: {color};"}
+
+        return func
+
+    return add_form_to_action_decorator
