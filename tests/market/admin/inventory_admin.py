@@ -8,6 +8,7 @@ from admin_action_tools.admin import (
     ActionFormMixin,
     AdminConfirmMixin,
     add_form_to_action,
+    color_action,
     confirm_action,
 )
 from tests.market.form import FileActionForm, NoteActionForm, NoteClearForm
@@ -66,6 +67,7 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
     @add_form_to_action(NoteActionForm)
     @add_form_to_action(NoteClearForm)
     @confirm_action()
+    @color_action()
     def add_notes_with_clear(self, request, object, forms=None):
         add_form = forms[0]
         reset_form = forms[1]
@@ -74,6 +76,7 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
         object.notes += f"\n\n{add_form.cleaned_data['date']}\n{add_form.cleaned_data['note']}"
         object.save()
 
+    @color_action(color="green")
     @add_form_to_action(FileActionForm)
     def add_stock(self, request, queryset, form=None):
         file = form.cleaned_data["stocks"].read().decode("utf-8")
@@ -83,10 +86,9 @@ class InventoryAdmin(AdminConfirmMixin, ActionFormMixin, DjangoObjectActions, Mo
 
     @add_form_to_action(FileActionForm)
     @confirm_action(display_queryset=False)
+    @color_action(attrs={"style": "background-color: lightblue; color: black"})
     def add_stock_with_confirm(self, request, queryset, form=None):
         file = form.cleaned_data["stocks"].read().decode("utf-8")
         reader = DictReader(io.StringIO(file), delimiter=";")
         for data in reader:
             queryset.filter(id=data["id"]).update(quantity=data["qt"])
-
-    add_stock.attrs = {"style": "background-color: green;"}

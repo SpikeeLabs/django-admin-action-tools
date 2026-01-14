@@ -256,6 +256,28 @@ if you want to not display the impacted objects, you can use
             # Do something with the object and forms
 ```
 
+
+### Adding Colors
+```py
+    from admin_action_tools import AdminConfirmMixin, ActionFormMixin, confirm_action, add_form_to_action
+    from django_object_actions import DjangoObjectActions
+    from myapp.form import NoteActionForm, SecondForm
+
+    class MyModelAdmin(ActionFormMixin, DjangoObjectActions, ModelAdmin):
+        change_actions = ["action1", "action2"]
+
+        @add_form_to_action(NoteActionForm, display_queryset=False)
+        @color_action(color="green") # Set HTML color
+        def action1(self, request, object, form=None):
+            # Do something with the object and forms
+
+
+        @add_form_to_action(NoteActionForm, display_queryset=False)
+        @color_action(attrs={"style": "background-color: lightblue; color: black"}) # Or you can pass the style directly
+        def action2(self, request, object, form=None):
+            # Do something with the object and forms
+```
+
 ## Development
 
 Check out our [development process](docs/development_process.md) if you're interested.
