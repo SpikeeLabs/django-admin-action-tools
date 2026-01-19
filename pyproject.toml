@@ -12,8 +12,8 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/SpikeeLabs/django-admin-action-tools"
 classifiers = [
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -23,7 +23,7 @@ packages = [{ include = "admin_action_tools" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = ">=4.2,>=5"
+Django = ">=4.2"
 django-widget-tweaks = "^1.4"
 
 [tool.poetry.group.dev.dependencies]
